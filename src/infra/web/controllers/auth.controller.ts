@@ -2,7 +2,7 @@ import { LoginUseCase } from '../../../application/usecase/auth/login';
 import { RegisterUserUseCase } from './../../../application/usecase/auth/registerUser';
 import { Request, Response } from "express";
 
-export class DriverController {
+export class AuthController {
     constructor(private readonly registerUserUseCase: RegisterUserUseCase, private readonly loginUseCase: LoginUseCase) {}
 
     public async registerUser(req: Request, res: Response){

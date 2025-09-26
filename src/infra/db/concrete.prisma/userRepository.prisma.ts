@@ -3,10 +3,11 @@ import { User } from "../../../domain/entities/User";
 import { UserRepository } from "../../../domain/repositories/User.repository";
 
 export class UserRepositoryPrisma implements UserRepository{
+    
     async save(user: User): Promise<string> {
         try {
             const props = user.getProps();
-            await prisma.usuarios.create({
+            await prisma.user.create({
                 data: {
                     id: props.id,
                     email: props.email,
@@ -28,7 +29,7 @@ export class UserRepositoryPrisma implements UserRepository{
 
     async findById(id: string): Promise<User | null> {
         try {
-            const user = await prisma.usuarios.findUnique({
+            const user = await prisma.users.findUnique({
                 where: { id }
             });
             if (!user) {
@@ -50,8 +51,29 @@ export class UserRepositoryPrisma implements UserRepository{
             throw error;
         }
     }
-    findByEmail(email: string): Promise<User | null> {
-        throw new Error("Method not implemented.");
+    async findByEmail(email: string): Promise<User | null> {
+        try {
+            const user = await prisma.users.findUnique({
+                where: { email }
+            });
+            if (!user) {
+                return null;
+            }
+            return User.assemble({
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                password: user.password,
+                role: user.role,
+                phone: user.phone ?? undefined,
+                isBlocked: user.isblocked,
+                createdAt: user.createdat ?? new Date(),
+                lastLogin: user.lastlogin ?? new Date()});
+        } catch (error) {
+            console.error("Erro ao buscar usuário por email no UserRepositoryPrisma:", error);
+            throw error;
+        }
+    
     }
     findAll(): Promise<User[]> {
         throw new Error("Method not implemented.");

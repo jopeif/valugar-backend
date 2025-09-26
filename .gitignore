@@ -1,0 +1,31 @@
+# Dependências
+node_modules/
+
+# Compilados do TypeScript
+dist/
+build/
+
+# Arquivos de log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ambiente
+.env
+
+# Cache do TypeScript
+*.tsbuildinfo
+
+# IDEs
+.vscode/
+.idea/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+/src/generated/prisma

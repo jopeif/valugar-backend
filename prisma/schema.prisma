@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model anuncios {
+  anuncio_id    String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  usuario_id    String           @db.Uuid
+  titulo        String           @db.VarChar(255)
+  descricao     String?
+  tipo          tipo_anuncio
+  categoria     categoria_imovel
+  status        status_anuncio   @default(PENDENTE)
+  valor_base    Decimal          @db.Decimal(14, 2)
+  iptu          Decimal?         @db.Decimal(10, 2)
+  cep           String?          @db.VarChar(9)
+  estado        String           @db.VarChar(2)
+  cidade        String           @db.VarChar(100)
+  bairro        String           @db.VarChar(100)
+  rua           String           @db.VarChar(255)
+  referencia    String?
+  area          Decimal?         @db.Decimal(10, 2)
+  quartos       Int?
+  banheiros     Int?
+  criado_em     DateTime?        @default(now()) @db.Timestamptz(6)
+  atualizado_em DateTime?        @default(now()) @db.Timestamptz(6)
+  usuarios      usuarios         @relation(fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario")
+
+  @@index([cidade], map: "idx_anuncios_cidade")
+  @@index([status], map: "idx_anuncios_status")
+  @@index([usuario_id], map: "idx_anuncios_usuario_id")
+}
+
+model usuarios {
+  id        String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email     String       @unique @db.VarChar(255)
+  name      String       @db.VarChar(255)
+  password  String       @db.VarChar(255)
+  phone     String?      @db.VarChar(20)
+  role      role_usuario @default(user)
+  createdat DateTime?    @default(now()) @db.Timestamptz(6)
+  lastlogin DateTime?    @db.Timestamptz(6)
+  isblocked Boolean      @default(false)
+  anuncios  anuncios[]
+}
+
+enum categoria_imovel {
+  CASA
+  APARTAMENTO
+  TERRENO
+  COMERCIAL
+}
+
+enum role_usuario {
+  admin
+  user
+}
+
+enum status_anuncio {
+  ATIVO
+  ARQUIVADO
+  PENDENTE
+  DENUNCIADO
+}
+
+enum tipo_anuncio {
+  VENDA
+  ALUGUEL
+}

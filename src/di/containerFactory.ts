@@ -1,4 +1,4 @@
-import { Container } from "./container";
+import { Container } from "./Container";
 
 export class ContainerFactory {
     private static instance:Container | null = null;

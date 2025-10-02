@@ -1,15 +1,19 @@
 import { User } from "../../../domain/entities/User";
 import { UserRepository } from "../../../domain/repositories/User.repository";
-import { RegisterUserInput, RegisterUserOutput } from "../../dto/auth/RegisterUserDTO";
+import { RegisterAdminInput, RegisterAdminOutput } from "../../dto/auth/RegisterAdminDTO";
 import { UseCase } from "../UseCase";
 
-export class RegisterUserUseCase implements UseCase<RegisterUserInput, RegisterUserOutput> {
+export class RegisterAdminUseCase implements UseCase<RegisterAdminInput, RegisterAdminOutput> {
     constructor(private readonly userRepository: UserRepository) {}
 
-    async execute (input: RegisterUserInput): Promise<RegisterUserOutput> {
+    async execute (input: RegisterAdminInput): Promise<RegisterAdminOutput> {
         try {
-            const { email, name, password, phone } = input;
-            const user = await User.build(email, name, password, 'user', phone);
+            const { email, name, password, phone, creationCode } = input;
+            const user = await User.build(email, name, password, 'admin', phone);
+
+            if (creationCode !== process.env.ADMIN_CREATION_CODE) {
+                throw new Error('Invalid creation code');
+            }
 
             const existingUser = await this.userRepository.findByEmail(email);
             if (existingUser) {

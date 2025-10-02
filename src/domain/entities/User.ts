@@ -1,6 +1,7 @@
 import { hash } from "bcrypt";
 import validator from "validator"; 
 import crypto from "crypto";
+import bcrypt from "bcrypt";
 
 export type UserProps = {
     id: string;
@@ -10,7 +11,7 @@ export type UserProps = {
     phone?: string | undefined;
     role: 'admin' | 'user';
     createdAt: Date;
-    lastLogin?: Date;
+    lastLogin?: Date | undefined;
     isBlocked: boolean;
 };
 
@@ -81,5 +82,13 @@ export class User {
 
     public getProps(): UserProps {
         return this.props;
+    }
+
+    public updateLastLogin(){
+        this.props.lastLogin = new Date();
+    }
+
+    public async checkPassword(password: string): Promise<boolean> {
+        return await bcrypt.compare(password, this.props.password);
     }
 }

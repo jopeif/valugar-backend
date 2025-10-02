@@ -15,9 +15,9 @@ export class UserRepositoryPrisma implements UserRepository{
                     password: props.password,
                     role: props.role,
                     phone: props.phone ?? null,
-                    isblocked: props.isBlocked,
-                    createdat: props.createdAt,
-                    lastlogin: props.lastLogin ?? null
+                    isBlocked: props.isBlocked,
+                    createdAt: props.createdAt,
+                    lastLogin: props.lastLogin ?? null
                 }
             });
             return props.id;
@@ -29,7 +29,7 @@ export class UserRepositoryPrisma implements UserRepository{
 
     async findById(id: string): Promise<User | null> {
         try {
-            const user = await prisma.users.findUnique({
+            const user = await prisma.user.findUnique({
                 where: { id }
             });
             if (!user) {
@@ -40,11 +40,11 @@ export class UserRepositoryPrisma implements UserRepository{
                 email: user.email,
                 name: user.name,
                 password: user.password,
-                role: user.role,
+                role: user.role as 'admin' | 'user',
                 phone: user.phone ?? undefined,
-                isBlocked: user.isblocked,
-                createdAt: user.createdat ?? new Date(),
-                lastLogin: user.lastlogin ?? new Date()
+                isBlocked: user.isBlocked,
+                createdAt: user.createdAt,
+                lastLogin: user.lastLogin ?? undefined
         });
         } catch (error) {
             console.error("Erro ao buscar usuário por ID no UserRepositoryPrisma:", error);
@@ -53,7 +53,7 @@ export class UserRepositoryPrisma implements UserRepository{
     }
     async findByEmail(email: string): Promise<User | null> {
         try {
-            const user = await prisma.users.findUnique({
+            const user = await prisma.user.findUnique({
                 where: { email }
             });
             if (!user) {
@@ -64,28 +64,63 @@ export class UserRepositoryPrisma implements UserRepository{
                 email: user.email,
                 name: user.name,
                 password: user.password,
-                role: user.role,
+                role: user.role  as 'admin' | 'user',
                 phone: user.phone ?? undefined,
-                isBlocked: user.isblocked,
-                createdAt: user.createdat ?? new Date(),
-                lastLogin: user.lastlogin ?? new Date()});
+                isBlocked: user.isBlocked,
+                createdAt: user.createdAt,
+                lastLogin: user.lastLogin ?? undefined
+            });
         } catch (error) {
             console.error("Erro ao buscar usuário por email no UserRepositoryPrisma:", error);
             throw error;
         }
     
     }
-    findAll(): Promise<User[]> {
-        throw new Error("Method not implemented.");
+    async findAll(): Promise<User[]> {
+        try {
+            const users = await prisma.user.findMany();
+            const assembledUsers = await Promise.all(users.map(user => User.assemble({
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                password: user.password,
+                role: user.role  as 'admin' | 'user',
+                phone: user.phone ?? undefined,
+                isBlocked: user.isBlocked,
+                createdAt: user.createdAt,
+                lastLogin: user.lastLogin ?? undefined
+            })));
+            return assembledUsers;
+        } catch (error) {
+            console.error("Erro ao buscar todos os usuários no UserRepositoryPrisma:", error);
+            throw error;
+        }
     }
     updateLastLogin(id: string, date: Date): Promise<void> {
-        throw new Error("Method not implemented.");
+        try {
+            prisma.user.update({
+                where: { id },
+                data: { lastLogin: date }
+            });
+            return Promise.resolve();
+        } catch (error) {
+            console.error("Erro ao atualizar lastLogin no UserRepositoryPrisma:", error);
+            throw error;
+        }
     }
     update(user: User): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    delete(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async delete(id: string): Promise<boolean> {
+        try {
+            await prisma.user.delete({
+                where: { id }
+            });
+            return Promise.resolve(true);
+        } catch (error) {
+            console.error("Erro ao deletar usuário no UserRepositoryPrisma:", error);
+            throw error;
+        }
     }
     
 }

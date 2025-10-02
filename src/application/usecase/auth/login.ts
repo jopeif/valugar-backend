@@ -14,9 +14,10 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput> {
             const { email, password } = input;
             const user = await this.userRepository.findByEmail(email);
 
-            if (!user || user.getProps().isBlocked){
+            if (!user || user.getProps().isBlocked || !user.checkPassword(password)) {
                 throw new Error("Invalid credentials");
             }
+
 
             await this.refreshTokenRepository.deleteAllFromUser(user.getProps().id);
 
@@ -35,7 +36,9 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput> {
             const expiresAt = new Date(Date.now() + config.refreshTokenDurationInDays * 24 * 60 * 60 * 1000);
 
             await this.refreshTokenRepository.save(user.getProps().id, refreshToken, expiresAt);
-            await this.userRepository.updateLastLogin(user.getProps().id, new Date());
+
+            user.updateLastLogin();
+            await this.userRepository.updateLastLogin(user.getProps().id, user.getProps().lastLogin!);
             return { accessToken, refreshToken };
         } catch (error) {
             console.error("Erro no LoginUseCase:", error);

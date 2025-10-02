@@ -1,9 +1,7 @@
 import { User } from "../../../domain/entities/User";
 import { RefreshTokenRepository } from "../../../domain/repositories/refreshToken.repository";
 import { UserRepository } from "../../../domain/repositories/User.repository";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../prisma";
 
 export class RefreshTokenRepositoryPrisma implements RefreshTokenRepository {
     save(userId: string, token: string, expiresAt: Date): Promise<void> {
@@ -31,7 +29,15 @@ export class RefreshTokenRepositoryPrisma implements RefreshTokenRepository {
         throw new Error("Method not implemented.");
     }
     deleteAllFromUser(userId: string): Promise<void> {
-        throw new Error("Method not implemented.");
+        try {
+            prisma.refreshToken.deleteMany({
+                where: { userId }
+            });
+            return Promise.resolve();
+        } catch (error) {
+            console.error("Erro ao deletar refresh tokens no RefreshTokenRepositoryPrisma:", error);
+            throw error;
+        }
     }
     
     

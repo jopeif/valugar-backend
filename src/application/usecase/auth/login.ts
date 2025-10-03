@@ -1,13 +1,18 @@
 import { RefreshTokenRepository } from "../../../domain/repositories/refreshToken.repository";
 import { UserRepository } from "../../../domain/repositories/User.repository";
 import { config } from "../../../infra/config/config";
+import { MailProvider } from "../../../infra/web/providers/mailProvider";
 import { LoginInput, LoginOutput } from "../../dto/auth/LoginDTO";
 import { UseCase } from "../UseCase";
 import jwt from "jsonwebtoken";
 
 
 export class LoginUseCase implements UseCase<LoginInput, LoginOutput> {
-    constructor(private readonly userRepository: UserRepository, private readonly refreshTokenRepository: RefreshTokenRepository) {}
+    constructor(
+        private readonly userRepository: UserRepository, 
+        private readonly refreshTokenRepository: RefreshTokenRepository,
+        private readonly mailProvider: MailProvider
+    ) {}
 
     async execute (input: LoginInput): Promise<LoginOutput> {
         try {
@@ -39,6 +44,7 @@ export class LoginUseCase implements UseCase<LoginInput, LoginOutput> {
 
             user.updateLastLogin();
             await this.userRepository.updateLastLogin(user.getProps().id, user.getProps().lastLogin!);
+            await this.mailProvider.sendLoginNotification(email, new Date());
             return { accessToken, refreshToken };
         } catch (error) {
             console.error("Erro no LoginUseCase:", error);

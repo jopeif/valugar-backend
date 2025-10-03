@@ -20,8 +20,8 @@ export class Container{
         const mailProvider = new NodemailerMailProvider()
         
         const registerUserUC = new RegisterUserUseCase(authRepo, mailProvider)
-        const registerAdminUC = new RegisterAdminUseCase(authRepo)
-        const loginUC = new LoginUseCase(authRepo, refreshTokenRepo)
+        const registerAdminUC = new RegisterAdminUseCase(authRepo, mailProvider)
+        const loginUC = new LoginUseCase(authRepo, refreshTokenRepo, mailProvider)
         const refreshTokenUC = new RefreshTokenUseCase(refreshTokenRepo, authRepo)
         const findAllUsersUC = new FindAllUsersUseCase(authRepo)
         const deleteUserUC = new DeleteUserUseCase(authRepo)

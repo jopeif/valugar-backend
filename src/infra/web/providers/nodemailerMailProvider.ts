@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { MailProvider } from "./mailProvider";
+import { MailProvider } from "./MailProvider";
 
 export class NodemailerMailProvider implements MailProvider {
     private transporter = nodemailer.createTransport({
@@ -14,7 +14,7 @@ export class NodemailerMailProvider implements MailProvider {
     });
 
     async sendVerificationEmail(to: string, token: string): Promise<void> {
-        const verifyUrl = `http://localhost:3000/auth/verify-email?token=${token}`;
+        const verifyUrl = `${process.env.URL}/auth/verify-email?token=${token}`;
 
         const html = `
             <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 30px;">

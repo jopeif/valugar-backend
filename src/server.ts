@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv';
 import { setupSwagger } from './infra/config/swagger';
-
+import cors from 'cors';
 import AuthRouter from './infra/web/routes/AuthRoutes';
 
 dotenv.config();
@@ -12,6 +12,8 @@ app.use(express.json());
 app.use(express.json());
 
 app.use('/auth/', AuthRouter);
+
+app.use(cors());
 
 
 setupSwagger(app);

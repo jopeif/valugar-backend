@@ -70,15 +70,24 @@ model User {
   email     String   @unique @db.VarChar(255)
   password  String   @db.VarChar(255)
   phone     String?  @db.VarChar(20)
-  role      String   @default("user") @db.VarChar(50)
   isBlocked Boolean  @default(false)
   createdAt DateTime @default(now())
   lastLogin DateTime?
   isMailVerified Boolean  @default(false)
   mailVerificationToken String?
+  roleId    String   @db.Uuid @map("role_id")
 
+  role      Role     @relation(fields: [roleId], references: [id], onUpdate: NoAction, map: "fk_user_role")
   listings       Listing[]
   refreshTokens  RefreshToken[]
+
+}
+
+model Role {
+  id   String   @id @db.Uuid
+  name String   @unique
+
+  users User[]
 }
 
 enum ListingType {
@@ -87,8 +96,7 @@ enum ListingType {
 }
 
 enum PropertyCategory {
-  HOUSE
-  APARTMENT
-  LAND
+  RESIDENTIAL
   COMMERCIAL
+  MIXED_USE
 }

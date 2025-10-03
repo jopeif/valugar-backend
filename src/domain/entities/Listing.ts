@@ -55,7 +55,7 @@ export class Listing {
         return new Listing(props)
     }
 
-    get listingProps(){
+    getprops(){
         return this.props
     }
 

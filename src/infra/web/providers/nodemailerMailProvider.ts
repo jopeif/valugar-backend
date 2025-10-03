@@ -8,6 +8,9 @@ export class NodemailerMailProvider implements MailProvider {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
         },
+        tls: {
+            rejectUnauthorized: false, // ignora erro de certificado, pelo amor de deus, lembrar de tirar isso em produção
+        },
     });
 
     async sendVerificationEmail(to: string, token: string): Promise<void> {

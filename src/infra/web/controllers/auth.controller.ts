@@ -6,6 +6,8 @@ import { DeleteUserUseCase } from '../../../application/usecase/auth/deleteUser'
 import { FindUserByIdUseCase } from '../../../application/usecase/auth/findUserById';
 import { FindUserByEmailUseCase } from '../../../application/usecase/auth/findUserByEmail';
 import { RegisterAdminUseCase } from '../../../application/usecase/auth/registerAdmin';
+import { RefreshTokenUseCase } from '../../../application/usecase/auth/refreshToken';
+import { VerificateEmailUseCase } from '../../../application/usecase/auth/verificateEmail';
 
 export class AuthController {
     constructor(
@@ -16,7 +18,8 @@ export class AuthController {
         private readonly deleteUserUseCase: DeleteUserUseCase,
         private readonly findUserByIdUseCase: FindUserByIdUseCase,
         private readonly findUserByEmailUseCase: FindUserByEmailUseCase,
-        
+        private readonly refreshTokenUseCase: RefreshTokenUseCase,
+        private readonly verificateEmailUseCase: VerificateEmailUseCase
     ) {}
 
     public async registerUser(req: Request, res: Response){
@@ -62,6 +65,21 @@ export class AuthController {
             res.status(200).json(result);
         }catch(error){
             console.error("Erro no auth.Controller, login:", error);
+            res.status(401).json({ error });
+        }
+    }
+
+    public async refreshToken(req: Request, res: Response){
+        try{
+            const { refreshToken } = req.body;
+            if (!refreshToken) {
+                return res.status(400).json({ error: "Refresh token is required" });
+            }
+
+            const result = await this.refreshTokenUseCase.execute({ refreshToken });
+            res.status(200).json(result);
+        }catch(error){
+            console.error("Erro no auth.Controller, refreshToken:", error);
             res.status(401).json({ error });
         }
     }
@@ -117,6 +135,20 @@ export class AuthController {
             res.status(401).json({ error });
         }
 
+    }
+
+    public async verificateEmail(req: Request, res: Response){
+        try{
+            const { token } = req.query;
+            if (!token || typeof token !== 'string') {
+                return res.status(400).json({ error: "Verification token is required" });
+            }
+            const result = await this.verificateEmailUseCase.execute({ token });
+            res.status(200).json(result);
+        }catch(error){
+            console.error("Erro no auth.Controller, verificateEmail:", error);
+            res.status(401).json({ error });
+        }
     }
     
 }

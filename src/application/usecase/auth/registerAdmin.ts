@@ -2,6 +2,7 @@ import { User } from "../../../domain/entities/User";
 import { UserRepository } from "../../../domain/repositories/User.repository";
 import { RegisterAdminInput, RegisterAdminOutput } from "../../dto/auth/RegisterAdminDTO";
 import { UseCase } from "../UseCase";
+import jwt from "jsonwebtoken";
 
 export class RegisterAdminUseCase implements UseCase<RegisterAdminInput, RegisterAdminOutput> {
     constructor(private readonly userRepository: UserRepository) {}
@@ -9,7 +10,13 @@ export class RegisterAdminUseCase implements UseCase<RegisterAdminInput, Registe
     async execute (input: RegisterAdminInput): Promise<RegisterAdminOutput> {
         try {
             const { email, name, password, phone, creationCode } = input;
-            const user = await User.build(email, name, password, 'admin', phone);
+            const verificationToken = jwt.sign(
+                { email },
+                process.env.JWT_EMAIL_VERIFICATION_SECRET as string,
+                { expiresIn: "1d" }
+            );
+
+            const user = await User.build(email, name, password, 'admin', phone, verificationToken);
 
             if (creationCode !== process.env.ADMIN_CREATION_CODE) {
                 throw new Error('Invalid creation code');

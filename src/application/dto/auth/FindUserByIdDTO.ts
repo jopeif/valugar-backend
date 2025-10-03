@@ -11,4 +11,5 @@ export type FindUserByIdOutput = {
     createdAt: Date;
     lastLogin?: Date | undefined;
     isBlocked: boolean;
+    isMailVerified: boolean | undefined;
 }

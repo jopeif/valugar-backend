@@ -53,6 +53,13 @@ const options: swaggerJSDoc.Options = {
             },
             required: ['email', 'password'],
             },
+            RefreshTokenDTO: {
+            type: 'object',
+            properties: {
+                refreshToken: { type: 'string' }
+            },
+            required: ['refreshToken'],
+            },
             UserResponse: {
             type: 'object',
             properties: {

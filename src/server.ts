@@ -18,4 +18,4 @@ setupSwagger(app);
 
 export default app;
 
-app.listen(process.env.PORT, () => console.log(`Server running on http://localhost:3000/${process.env.PORT}\nAPI docs available at http://localhost:3000/docs`));
+app.listen(process.env.PORT, () => console.log(`Server running on ${process.env.URL}:${process.env.PORT}\nAPI docs available at ${process.env.URL}:${process.env.PORT}/docs`));

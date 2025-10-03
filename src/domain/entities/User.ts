@@ -13,6 +13,8 @@ export type UserProps = {
     createdAt: Date;
     lastLogin?: Date | undefined;
     isBlocked: boolean;
+    isMailVerified?: boolean;
+    mailVerificationToken?: string | undefined;
 };
 
 export class User {
@@ -24,6 +26,7 @@ export class User {
         password: string,
         role: 'admin' | 'user',
         phone?: string,
+        mailVerificationToken?: string
     ):Promise<User> {
 
         // validações
@@ -67,6 +70,8 @@ export class User {
             role,
             createdAt: new Date(),
             isBlocked: false,
+            isMailVerified: false,
+            mailVerificationToken,
         });
 
         return user;
@@ -90,5 +95,9 @@ export class User {
 
     public async checkPassword(password: string): Promise<boolean> {
         return await bcrypt.compare(password, this.props.password);
+    }
+
+    public setMailVerified(status: boolean){
+        this.props.isMailVerified = status;
     }
 }

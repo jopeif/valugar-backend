@@ -20,6 +20,7 @@ export class FindAllUsersUseCase implements UseCase<void, FindAllUsersOutput> {
                     createdAt: props.createdAt,
                     lastLogin: props.lastLogin,
                     isBlocked: props.isBlocked,
+                    isMailVerified: props.isMailVerified
                 };
             });
 

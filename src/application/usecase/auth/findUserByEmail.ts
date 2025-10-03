@@ -23,6 +23,7 @@ export class FindUserByEmailUseCase implements UseCase<FindUserByEmailInput, Fin
                 createdAt: props.createdAt,
                 lastLogin: props.lastLogin,
                 isBlocked: props.isBlocked,
+                isMailVerified: props.isMailVerified
             };
         } catch (error) {
             console.error("Erro no findUserByEmailUseCase:", error);

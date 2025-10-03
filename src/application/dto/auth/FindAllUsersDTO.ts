@@ -8,4 +8,5 @@ export type FindAllUsersOutput = {
     createdAt: Date;
     lastLogin?: Date | undefined;
     isBlocked: boolean;
+    isMailVerified: boolean | undefined;
 }[];

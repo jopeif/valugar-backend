@@ -3,7 +3,7 @@ import { User } from "../../../domain/entities/User";
 import { UserRepository } from "../../../domain/repositories/User.repository";
 
 export class UserRepositoryPrisma implements UserRepository{
-    
+
     async save(user: User): Promise<string> {
         try {
             const props = user.getProps();
@@ -17,7 +17,9 @@ export class UserRepositoryPrisma implements UserRepository{
                     phone: props.phone ?? null,
                     isBlocked: props.isBlocked,
                     createdAt: props.createdAt,
-                    lastLogin: props.lastLogin ?? null
+                    lastLogin: props.lastLogin ?? null,
+                    isMailVerified: props.isMailVerified ?? false,
+                    mailVerificationToken: props.mailVerificationToken ?? null
                 }
             });
             return props.id;
@@ -44,7 +46,8 @@ export class UserRepositoryPrisma implements UserRepository{
                 phone: user.phone ?? undefined,
                 isBlocked: user.isBlocked,
                 createdAt: user.createdAt,
-                lastLogin: user.lastLogin ?? undefined
+                lastLogin: user.lastLogin ?? undefined,
+                isMailVerified: user.isMailVerified,
         });
         } catch (error) {
             console.error("Erro ao buscar usuário por ID no UserRepositoryPrisma:", error);
@@ -64,11 +67,12 @@ export class UserRepositoryPrisma implements UserRepository{
                 email: user.email,
                 name: user.name,
                 password: user.password,
-                role: user.role  as 'admin' | 'user',
+                role: user.role as 'admin' | 'user',
                 phone: user.phone ?? undefined,
                 isBlocked: user.isBlocked,
                 createdAt: user.createdAt,
-                lastLogin: user.lastLogin ?? undefined
+                lastLogin: user.lastLogin ?? undefined,
+                isMailVerified: user.isMailVerified,
             });
         } catch (error) {
             console.error("Erro ao buscar usuário por email no UserRepositoryPrisma:", error);
@@ -84,11 +88,12 @@ export class UserRepositoryPrisma implements UserRepository{
                 email: user.email,
                 name: user.name,
                 password: user.password,
-                role: user.role  as 'admin' | 'user',
+                role: user.role as 'admin' | 'user',
                 phone: user.phone ?? undefined,
                 isBlocked: user.isBlocked,
                 createdAt: user.createdAt,
-                lastLogin: user.lastLogin ?? undefined
+                lastLogin: user.lastLogin ?? undefined,
+                isMailVerified: user.isMailVerified,
             })));
             return assembledUsers;
         } catch (error) {
@@ -108,19 +113,72 @@ export class UserRepositoryPrisma implements UserRepository{
             throw error;
         }
     }
-    update(user: User): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async update(user: User): Promise<boolean> {
+        try {
+            const props = user.getProps();
+            await prisma.user.update({
+                where: { id: props.id },
+                data: {
+                    email: props.email,
+                    name: props.name,
+                    phone: props.phone ?? null,
+                }
+            });
+            return true
+        } catch (error) {
+            console.error("Erro ao atualizar usuário no UserRepositoryPrisma:", error);
+            throw error;
+        }
     }
+
+    async verifyEmail(id: string): Promise<boolean> {
+        try {
+            await prisma.user.update({
+                where: { id },
+                data: { isMailVerified: true }
+            });
+
+
+
+            return true;
+        } catch (error) {
+            console.error("Erro ao verificar email no UserRepositoryPrisma:", error);
+            throw error;
+        }
+    }
+    
     async delete(id: string): Promise<boolean> {
         try {
             await prisma.user.delete({
                 where: { id }
             });
-            return Promise.resolve(true);
+            return true;
         } catch (error) {
             console.error("Erro ao deletar usuário no UserRepositoryPrisma:", error);
             throw error;
         }
     }
-    
+
+    async findByMailVerificationToken(token: string): Promise<User | null> {
+        try {
+            const user = await prisma.user.findFirst({
+                where: { mailVerificationToken: token }
+            });
+            return User.assemble({
+                id: user?.id ?? '',
+                email: user?.email ?? '',
+                name: user?.name ?? '',
+                password: user?.password ?? '',
+                role: user?.role  as 'admin' | 'user' ?? 'user',
+                phone: user?.phone ?? undefined,
+                isBlocked: user?.isBlocked ?? false,
+                createdAt: user?.createdAt ?? new Date(),
+                lastLogin: user?.lastLogin ?? undefined,
+                isMailVerified: user?.isMailVerified ?? false
+            });
+        } catch (error) {
+            console.error("Erro ao buscar usuário por token de verificação de email no UserRepositoryPrisma:", error);
+            throw error;
+        }
+    }
 }

@@ -35,6 +35,37 @@ const container = ContainerFactory.getContainer();
 router.post("/login", (req, res) => container.authController.login(req, res));
 
 
+
+/**
+ * @swagger
+ * /auth/refresh-token:
+ *   post:
+ *     summary: Login do usuário por meio do refresh token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RefreshTokenDTO'
+ *     responses:
+ *       200:
+ *         description: Login realizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   description: Token JWT usado para autenticar requisições na API
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Token usado para renovar o accessToken quando ele expira
+ */
+router.post("/refresh-token", (req, res) => container.authController.refreshToken(req, res));
+
+
 /**
  * @swagger
  * /auth/user/register:
@@ -89,6 +120,26 @@ router.post("/admin/register", (req, res) => container.authController.registerAd
 
 /**
  * @swagger
+ * /auth/user/{id}:
+ *   delete:
+ *     summary: Deleta um usuário pelo ID (somente admins)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Usuário deletado com sucesso
+ */
+router.delete("/user/:id", adminMiddleware, (req, res) => container.authController.deleteUser(req, res));
+
+/**
+ * @swagger
  * /auth/user:
  *   get:
  *     summary: Retorna todos os usuários (somente admins)
@@ -107,25 +158,6 @@ router.post("/admin/register", (req, res) => container.authController.registerAd
  */
 router.get("/user", adminMiddleware, (req, res) => container.authController.findAllUsers(req, res));
 
-/**
- * @swagger
- * /auth/user/{id}:
- *   delete:
- *     summary: Deleta um usuário pelo ID (somente admins)
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Usuário deletado com sucesso
- */
-router.delete("/user/:id", adminMiddleware, (req, res) => container.authController.deleteUser(req, res));
 
 /**
  * @swagger
@@ -174,5 +206,27 @@ router.get("/user/id/:id", (req, res) => container.authController.findUserById(r
  *               $ref: '#/components/schemas/UserResponse'
  */
 router.get("/user/email/:email", (req, res) => container.authController.findUserByEmail(req, res));
+
+/**
+ * @swagger
+ * /auth/verify-email/?token=SEU_TOKEN:
+ *   get:
+ *     summary: Verifica um e-mail de usuário pelo token (Não se importe com essa rota por hora, frontend!)
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: E-mail verificado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserResponse'
+ */
+router.get("/verify-email/", (req, res) => container.authController.verificateEmail(req, res));
 
 export default router;

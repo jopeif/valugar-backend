@@ -7,12 +7,14 @@ export class listingController{
 
     public async create(req:Request, res:Response){
         try {
+
             const { title, description, type, category, basePrice, iptu, userId, address, details } = req.body;
-            const createListingUseCase = this.createListingUseCase.execute({title, description, type, category, basePrice, iptu, userId, address, details});
+            const createListingUseCase = await this.createListingUseCase.execute({title, description, type, category, basePrice, iptu, userId, address, details});
+            res.status(201).json(await createListingUseCase);
         } catch (error) {
-            console.log(error);
-            throw error;
+            res.status(400).json({ error });
         }
     }
+
 
 }

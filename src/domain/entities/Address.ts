@@ -1,23 +1,23 @@
 export type AddressProps = {
-    id: String,
-    zipCode: String,
-    state: String,
-    city: String,
-    neighborhood: String,
-    street: String,
-    reference: String | null,
+    id: string,
+    zipCode: string,
+    state: string,
+    city: string,
+    neighborhood: string,
+    street: string,
+    reference: string | null,
 }
 
 export class Address {
     private constructor(private props: AddressProps){}
 
     static build(
-        zipCode: String,
-        state: String,
-        city: String,
-        neighborhood: String,
-        street: String,
-        reference: String | null
+        zipCode: string,
+        state: string,
+        city: string,
+        neighborhood: string,
+        street: string,
+        reference: string | null
     ): Address {
         const props: AddressProps = {
             id: crypto.randomUUID(),

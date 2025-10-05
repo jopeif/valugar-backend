@@ -10,7 +10,7 @@ export type ListingProps = {
     category: "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
     basePrice: Number,
     iptu: Number | null,
-    userId: String,
+    userId: string,
     createdAt: Date,
     updatedAt: Date | null,
     address: Address,
@@ -58,7 +58,7 @@ export class Listing {
         return new Listing(props)
     }
 
-    getprops(){
+    getProps(){
         return this.props
     }
 

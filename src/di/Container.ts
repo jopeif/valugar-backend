@@ -7,9 +7,12 @@ import { RefreshTokenUseCase } from "../application/usecase/auth/refreshToken";
 import { RegisterAdminUseCase } from "../application/usecase/auth/registerAdmin";
 import { RegisterUserUseCase } from "../application/usecase/auth/registerUser";
 import { VerificateEmailUseCase } from "../application/usecase/auth/verificateEmail";
+import { CreateListingUseCase } from "../application/usecase/listing/createListing";
+import { ListingRepositoryPrisma } from "../infra/db/concrete.prisma/listingRepository.prisma";
 import { RefreshTokenRepositoryPrisma } from "../infra/db/concrete.prisma/refreshTokenRepository.prisma";
 import { UserRepositoryPrisma } from "../infra/db/concrete.prisma/userRepository.prisma";
 import { AuthController } from "../infra/web/controllers/auth.controller";
+import { listingController } from "../infra/web/controllers/listing.controller";
 import { NodemailerMailProvider } from "../infra/web/providers/nodemailerMailProvider";
 
 export class Container{
@@ -30,5 +33,13 @@ export class Container{
         const verificateEmailUC = new VerificateEmailUseCase(authRepo)
 
         return new AuthController(registerUserUC, registerAdminUC, loginUC, findAllUsersUC, deleteUserUC, findUserByIdUC, findUserByEmailUC, refreshTokenUC, verificateEmailUC);
+    }
+
+    public get listingController(): listingController {
+        const listingRepo = new ListingRepositoryPrisma()
+
+        const createListingUseCase = new CreateListingUseCase(listingRepo)
+
+        return new listingController(createListingUseCase);
     }
 }

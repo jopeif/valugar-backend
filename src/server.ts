@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { setupSwagger } from './infra/config/swagger';
 import cors from 'cors';
 import AuthRouter from './infra/web/routes/AuthRoutes';
+import ListingRouter from './infra/web/routes/ListingRoutes';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors({
 }));
 
 app.use('/auth/', AuthRouter);
+app.use('/listing/', ListingRouter)
 
 
 

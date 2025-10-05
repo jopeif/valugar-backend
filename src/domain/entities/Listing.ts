@@ -1,4 +1,6 @@
 import validator from "validator"; 
+import { Address } from "./Address";
+import { PropertyDetails } from "./PropertyDetail";
 
 export type ListingProps = {
     id: string,
@@ -9,10 +11,10 @@ export type ListingProps = {
     basePrice: Number,
     iptu: Number | null,
     userId: String,
-    addressId: String | null,
-    detailsId: String | null,
     createdAt: Date,
     updatedAt: Date | null,
+    address: Address,
+    PropertyDetails: PropertyDetails
 }
 
 export class Listing {
@@ -26,8 +28,8 @@ export class Listing {
         userId: string,
         description: string | null,
         iptu: number | null,
-        addressId: string | null,
-        detailsId: string | null
+        address: Address,
+        details: PropertyDetails,
     ){
         const id = crypto.randomUUID()
         const createdAt = new Date()
@@ -43,10 +45,11 @@ export class Listing {
                 basePrice,
                 iptu,
                 userId,
-                addressId,
-                detailsId,
                 createdAt,
-                updatedAt
+                updatedAt,
+                address,
+                PropertyDetails: details
+
             }
         )
     }

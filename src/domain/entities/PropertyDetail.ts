@@ -2,8 +2,7 @@ export type PropertyDetailsProps = {
     id: string,
     area: string,
     bedrooms: number,
-    bathrooms: number,
-    listing: string,
+    bathrooms: number
 }
 
 export class PropertyDetails {
@@ -12,15 +11,13 @@ export class PropertyDetails {
     static build(
         area: string,
         bedrooms: number,
-        bathrooms: number,
-        listing: string,
+        bathrooms: number
     ): PropertyDetails {
         const props: PropertyDetailsProps = {
             id: crypto.randomUUID(),
             area,
             bedrooms,
-            bathrooms,
-            listing,
+            bathrooms
         }
         return new PropertyDetails(props)
     }

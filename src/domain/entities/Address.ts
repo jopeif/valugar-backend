@@ -12,12 +12,12 @@ export class Address {
     private constructor(private props: AddressProps){}
 
     static build(
-        zipCode: string,
-        state: string,
-        city: string,
-        neighborhood: string,
-        street: string,
-        reference: string | null,
+        zipCode: String,
+        state: String,
+        city: String,
+        neighborhood: String,
+        street: String,
+        reference: String | null
     ): Address {
         const props: AddressProps = {
             id: crypto.randomUUID(),
@@ -26,7 +26,7 @@ export class Address {
             city,
             neighborhood,
             street,
-            reference,
+            reference
         }
         return new Address(props)
     }

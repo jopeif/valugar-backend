@@ -229,4 +229,7 @@ router.get("/user/email/:email", (req, res) => container.authController.findUser
  */
 router.get("/verify-email/", (req, res) => container.authController.verificateEmail(req, res));
 
+
+
+
 export default router;

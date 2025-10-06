@@ -72,7 +72,40 @@ router.delete("/:id", authMiddleware, adminMiddleware, (req, res) => container.l
  *             schema:
  *               $ref: '#/components/schemas/FindListingByIdDTO'
  */
-router.get("/:id", (req, res) => {
-  container.listingController.findById(req, res);});
+router.get("/:id", (req, res) => {container.listingController.findById(req, res);});
+
+
+//TERMINAR ESSA ROTA DEPOIS. INCOMPLETA!!
+
+/**
+ * @swagger
+ * /listing/{id}:
+ *   put:
+ *     summary: Edita um anúncio já existente (NÃO FINALIZADO).
+ *     tags: [Listings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateListingDTOInput'
+ *     responses:
+ *       200:
+ *         description: Anúncio atualizado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UpdateListingDTOOutput'
+ */
+router.put("/:id", (req, res) => {
+  container.listingController.update(req, res);
+});
+
 
 export default router;

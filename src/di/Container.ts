@@ -10,6 +10,7 @@ import { VerificateEmailUseCase } from "../application/usecase/auth/verificateEm
 import { CreateListingUseCase } from "../application/usecase/listing/createListing";
 import { DeleteListingUseCase } from "../application/usecase/listing/deleteListing";
 import { FindListingByIdUseCase } from "../application/usecase/listing/findListingById";
+import { UpdateListingUseCase } from "../application/usecase/listing/updateListing";
 import { ListingRepositoryPrisma } from "../infra/db/concrete.prisma/listingRepository.prisma";
 import { RefreshTokenRepositoryPrisma } from "../infra/db/concrete.prisma/refreshTokenRepository.prisma";
 import { UserRepositoryPrisma } from "../infra/db/concrete.prisma/userRepository.prisma";
@@ -43,7 +44,8 @@ export class Container{
         const createListingUseCase = new CreateListingUseCase(listingRepo)
         const deleteListingUseCase = new DeleteListingUseCase(listingRepo)
         const findByIdUseCase = new FindListingByIdUseCase(listingRepo)
+        const updateListingUC = new UpdateListingUseCase(listingRepo)
 
-        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase);
+        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase, updateListingUC);
     }
 }

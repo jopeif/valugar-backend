@@ -2,6 +2,7 @@ import { CreateListingUseCase } from "../../../application/usecase/listing/creat
 import { Request, Response } from "express";
 import { DeleteListingUseCase } from "../../../application/usecase/listing/deleteListing";
 import { FindListingByIdUseCase } from "../../../application/usecase/listing/findListingById";
+import { UpdateListingUseCase } from "../../../application/usecase/listing/updateListing";
 
 export class listingController{
 
@@ -9,6 +10,7 @@ export class listingController{
         public readonly createListingUseCase:CreateListingUseCase,
         public readonly deleteListingUseCase:DeleteListingUseCase,
         public readonly findByIdUseCase:FindListingByIdUseCase,
+        public readonly updateListingUseCase: UpdateListingUseCase
     ){}
 
     public async create(req:Request, res:Response){
@@ -34,6 +36,25 @@ export class listingController{
             res.status(200).json(await deleteListingUseCase);
         } catch (error) {
             res.status(400).json({ error });
+        }
+    }
+
+    public async update(req:Request, res: Response){
+        try {
+
+            const { id } = req.params
+            
+            if(!id){
+                res.status(400).json({error: "ID is required"})
+                return
+            }
+
+            const { title, description, type, category, basePrice, iptu, userId, address, details, createdAt, updatedAt } = req.body;
+            const result = await this.updateListingUseCase.execute({ id, title, description, type, category, basePrice, iptu, userId, address, details, createdAt, updatedAt })
+
+            res.status(200).json(result)
+        } catch (error) {
+            res.status(400).json({error})
         }
     }
 

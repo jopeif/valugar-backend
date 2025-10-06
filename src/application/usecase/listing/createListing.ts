@@ -1,7 +1,7 @@
 import { Address } from "../../../domain/entities/Address";
 import { Listing } from "../../../domain/entities/Listing";
 import { PropertyDetails } from "../../../domain/entities/PropertyDetail";
-import { ListingRepository } from "../../../domain/repositories/listing.repository";
+import { ListingRepository } from "../../../domain/repositories/Listing.repository";
 import { createListingDTOInput, createListingDTOOutput } from "../../dto/listing/CreateListingDTO";
 import { UseCase } from "../UseCase";
 

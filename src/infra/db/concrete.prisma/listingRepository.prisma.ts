@@ -1,7 +1,7 @@
 import { Address } from "../../../domain/entities/Address";
 import { Listing } from "../../../domain/entities/Listing";
 import { PropertyDetails } from "../../../domain/entities/PropertyDetail";
-import { ListingRepository } from "../../../domain/repositories/listing.repository";
+import { ListingRepository } from "../../../domain/repositories/Listing.repository";
 import { prisma } from "../prisma";
 
 export class ListingRepositoryPrisma implements ListingRepository {
@@ -59,9 +59,54 @@ export class ListingRepositoryPrisma implements ListingRepository {
     findAll(): Promise<Listing[]> {
         throw new Error("Method not implemented.");
     }
-    update(address: Listing): Promise<boolean> {
-        throw new Error("Method not implemented.");
-    }
+    async update(listing: Listing): Promise<boolean> {
+        try {
+            const props = listing.getProps();
+            const addressProps = props.address.getProps();
+            const detailsProps = props.PropertyDetails.getProps();
+
+            await prisma.$transaction([
+            prisma.address.update({
+                where: { id: addressProps.id },
+                data: {
+                zipCode: addressProps.zipCode,
+                state: addressProps.state,
+                city: addressProps.city,
+                neighborhood: addressProps.neighborhood,
+                street: addressProps.street,
+                reference: addressProps.reference ?? null,
+                },
+            }),
+            prisma.propertyDetail.update({
+                where: { id: detailsProps.id },
+                data: {
+                area: detailsProps.area,
+                bedrooms: detailsProps.bedrooms,
+                bathrooms: detailsProps.bathrooms,
+                },
+            }),
+            prisma.listing.update({
+                where: { id: props.id },
+                data: {
+                title: props.title,
+                description: props.description,
+                type: props.type,
+                category: props.category,
+                basePrice: Number(props.basePrice),
+                iptu: props.iptu ? Number(props.iptu) : null,
+                userId: props.userId,
+                updatedAt: new Date(),
+                },
+            }),
+            ]);
+
+            return true;
+        } catch (error) {
+            console.error("Erro ao atualizar anúncio no ListingRepositoryPrisma:", error);
+            throw error;
+        }
+        }
+
     async delete(id: string): Promise<boolean> {
         try {
             await prisma.listing.delete({
@@ -110,7 +155,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
                         title: listingProps.title,
                         description: listingProps.description,
                         type: listingProps.type,
-                        category: listingProps.category as 'RESIDENTIAL' | 'COMMERCIAL' | 'MIXED_USE',
+                        category: listingProps.category as 'RESIDENCIAL' | 'COMMERCIAL' | 'MIXED_USE',
                         basePrice: listingProps.basePrice as number,
                         iptu: listingProps.iptu as number,
                         user: {

@@ -1,4 +1,4 @@
-import { ListingRepository } from "../../../domain/repositories/listing.repository";
+import { ListingRepository } from "../../../domain/repositories/Listing.repository";
 import { findListingByIdDTOInput, findListingByIdDTOOutput } from "../../dto/listing/FindListingByIdDTO";
 import { UseCase } from "../UseCase";
 

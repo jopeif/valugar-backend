@@ -1,4 +1,4 @@
-import { ListingRepository } from "../../../domain/repositories/listing.repository";
+import { ListingRepository } from "../../../domain/repositories/Listing.repository";
 import { deleteListingDTOInput, deleteListingDTOOutput } from "../../dto/listing/DeleteListingDTO";
 import { UseCase } from "../UseCase";
 

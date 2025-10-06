@@ -5,23 +5,73 @@ import { ListingRepository } from "../../../domain/repositories/listing.reposito
 import { prisma } from "../prisma";
 
 export class ListingRepositoryPrisma implements ListingRepository {
-    findById(id: string): Promise<Address | null> {
-        throw new Error("Method not implemented.");
+    async findById(id: string): Promise<Listing | null> {
+        try {
+            const listing = await prisma.listing.findUnique({
+                where: { id },
+                include: { address: true, propertyDetails: true},
+            });
+
+            if (!listing || !listing.address || !listing.propertyDetails) {
+                return null;
+            }
+
+            const address = Address.build(
+                listing.address.zipCode,
+                listing.address.state,
+                listing.address.city,
+                listing.address.neighborhood,
+                listing.address.street,
+                listing.address.reference
+            );
+
+            const details = PropertyDetails.build(
+                Number(listing.propertyDetails.area ?? 0),
+                listing.propertyDetails.bedrooms ?? 0,
+                listing.propertyDetails.bathrooms ?? 0
+            );
+
+            const listingEntity = Listing.build(
+                listing.title,
+                listing.type,
+                listing.category as "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
+                Number(listing.basePrice),
+                listing.userId,
+                listing.description,
+                listing.iptu ? Number(listing.iptu) : null,
+                address,
+                details
+            );
+
+            return listingEntity;
+        } catch (error) {
+            console.error("Erro ao buscar listing por ID no ListingRepositoryPrisma:", error);
+            throw error;
+        }
     }
+
     searchListings(query: string): Promise<Listing[]> {
         throw new Error("Method not implemented.");
     }
-    findByZipCode(zipCode: string): Promise<Address | null> {
+    findByZipCode(zipCode: string): Promise<Listing | null> {
         throw new Error("Method not implemented.");
     }
-    findAll(): Promise<Address[]> {
+    findAll(): Promise<Listing[]> {
         throw new Error("Method not implemented.");
     }
-    update(address: Address): Promise<boolean> {
+    update(address: Listing): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    delete(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async delete(id: string): Promise<boolean> {
+        try {
+            await prisma.listing.delete({
+                where: { id }
+            });
+            return true;
+        } catch (error) {
+            console.log("Erro ao deletar listing no ListingRepositoryPrisma:", error);
+            throw error;
+        }
     }
     async save(listing: Listing, address: Address, details: PropertyDetails): Promise<string> {
         try {

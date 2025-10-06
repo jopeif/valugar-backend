@@ -30,6 +30,49 @@ const container = ContainerFactory.getContainer();
  *                   type: string
  *                   description: ID do anúncio registrado
  */
-router.post("/register/", authMiddleware, (req, res) => container.listingController.create(req, res));
+router.post("/register/", (req, res) => container.listingController.create(req, res));
+
+/**
+ * @swagger
+ * /listing/{id}:
+ *   delete:
+ *     summary: Deleta um anúncio pelo ID (somente admins ou dono do post)
+ *     tags: [Listings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Anúncio deletado com sucesso
+ */
+router.delete("/:id", authMiddleware, adminMiddleware, (req, res) => container.listingController.delete(req, res));
+
+/**
+ * @swagger
+ * /listing/{id}:
+ *   get:
+ *     summary: Busca um anúncio pelo ID
+ *     tags: [Listings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Anúncio encontrado com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/FindListingByIdDTO'
+ */
+router.get("/:id", (req, res) => {
+  container.listingController.findById(req, res);});
 
 export default router;

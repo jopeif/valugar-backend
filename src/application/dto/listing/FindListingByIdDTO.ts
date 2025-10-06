@@ -1,11 +1,18 @@
-export type createListingDTOInput = {
+export type findListingByIdDTOInput = {
+    id: string,
+}
+
+export type findListingByIdDTOOutput = {
+    id: string,
     title: string,
-    description?: string,
+    description: string | null,
     type: "SALE" | "RENT",
     category: "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
-    basePrice: number,
-    iptu?: number,
+    basePrice: Number,
+    iptu: Number | null,
     userId: string,
+    createdAt: Date,
+    updatedAt: Date | null,
     address: {
         zipCode: string,
         state: string,
@@ -19,8 +26,4 @@ export type createListingDTOInput = {
         bedrooms: number,
         bathrooms: number,
     }
-}
-
-export type createListingDTOOutput = {
-    id: string,
 }

@@ -1,6 +1,6 @@
 export type PropertyDetailsProps = {
     id: string,
-    area: string,
+    area: number,
     bedrooms: number,
     bathrooms: number
 }
@@ -9,7 +9,7 @@ export class PropertyDetails {
     private constructor(private props: PropertyDetailsProps){}
 
     static build(
-        area: string,
+        area: number,
         bedrooms: number,
         bathrooms: number
     ): PropertyDetails {

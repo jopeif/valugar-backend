@@ -1,13 +1,13 @@
 export type SearchListingDTOInput = {
-    query?: string,
+    query: string,
     minPrice?: number,
     maxPrice?: number,
     minBedrooms?: number,
     maxBedrooms?: number,
     propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
     listingType?: "SALE" | "RENT",
-    page: number,
-    pageSize: number
+    page?: number,
+    pageSize?: number
 }
 
 export type SearchListingsDTOOutput = {

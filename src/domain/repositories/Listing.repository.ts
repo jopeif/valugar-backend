@@ -16,7 +16,7 @@ export interface ListingRepository {
         page?: number,
         pageSize?: number
     ): Promise<Listing[]>
-
+    findByUserId(id: string): Promise<Listing[]|null>
     findByZipCode(zipCode: string): Promise<Listing | null>;
     findAll(): Promise<Listing[]>;
     update(address: Listing): Promise<boolean>;

@@ -1,3 +1,4 @@
+import { FindListingByUserUseCase } from './../application/usecase/listing/findListingByUser';
 import { DeleteUserUseCase } from "../application/usecase/auth/deleteUser";
 import { FindAllUsersUseCase } from "../application/usecase/auth/findAllUsers";
 import { FindUserByEmailUseCase } from "../application/usecase/auth/findUserByEmail";
@@ -41,13 +42,15 @@ export class Container{
 
     public get listingController(): listingController {
         const listingRepo = new ListingRepositoryPrisma()
+        const authRepo = new UserRepositoryPrisma()
 
         const createListingUseCase = new CreateListingUseCase(listingRepo)
         const deleteListingUseCase = new DeleteListingUseCase(listingRepo)
         const findByIdUseCase = new FindListingByIdUseCase(listingRepo)
         const updateListingUC = new UpdateListingUseCase(listingRepo)
         const searchListingsUC = new SearchListingsUseCase(listingRepo)
+        const findListingByUserUC = new FindListingByUserUseCase(listingRepo, authRepo)
 
-        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase, updateListingUC, searchListingsUC);
+        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase, updateListingUC, searchListingsUC, findListingByUserUC);
     }
 }

@@ -6,6 +6,54 @@ import { ListingRepository } from "../../../domain/repositories/Listing.reposito
 import { prisma } from "../prisma";
 
 export class ListingRepositoryPrisma implements ListingRepository {
+    
+    async findByUserId(id: string): Promise<Listing[] | null> {
+        try {
+            const listings = await prisma.listing.findMany({
+                where: {userId:id},
+                include: { address: true, propertyDetails: true},
+            })
+
+            if (!listings) {
+                return null;
+            }
+            return listings
+                .filter(l => l.address && l.propertyDetails)
+                .map(l => {
+                    const address = Address.build(
+                        l.address!.zipCode,
+                        l.address!.state,
+                        l.address!.city,
+                        l.address!.neighborhood,
+                        l.address!.street,
+                        l.address!.reference
+                    );
+
+                    const details = PropertyDetails.build(
+                        Number(l.propertyDetails!.area ?? 0),
+                        l.propertyDetails!.bedrooms ?? 0,
+                        l.propertyDetails!.bathrooms ?? 0
+                    );
+
+                    return Listing.build(
+                        l.title,
+                        l.type,
+                        l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+                        Number(l.basePrice),
+                        l.userId,
+                        l.description,
+                        l.iptu ? Number(l.iptu) : null,
+                        address,
+                        details
+                    );
+                });
+
+
+        } catch (error) {
+            throw error
+        }
+    }
+
     async findById(id: string): Promise<Listing | null> {
         try {
             const listing = await prisma.listing.findUnique({
@@ -132,13 +180,14 @@ export class ListingRepositoryPrisma implements ListingRepository {
         }
     }
 
-
     findByZipCode(zipCode: string): Promise<Listing | null> {
         throw new Error("Method not implemented.");
     }
+
     findAll(): Promise<Listing[]> {
         throw new Error("Method not implemented.");
     }
+
     async update(listing: Listing): Promise<boolean> {
         try {
             const props = listing.getProps();
@@ -185,7 +234,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
             console.error("Erro ao atualizar anúncio no ListingRepositoryPrisma:", error);
             throw error;
         }
-        }
+    }
 
     async delete(id: string): Promise<boolean> {
         try {
@@ -198,6 +247,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
             throw error;
         }
     }
+
     async save(listing: Listing, address: Address, details: PropertyDetails): Promise<string> {
         try {
             const listingProps = listing.getProps();

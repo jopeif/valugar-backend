@@ -111,6 +111,10 @@ router.get("/search/", (req, res) => {
   container.listingController.searchListings(req, res);
 });
 
+router.get("/user/:id", (req, res) => {
+  container.listingController.findListingByUser(req, res)
+})
+
 
 
 export default router;

@@ -1,8 +1,16 @@
-export type findListingByIdDTOInput = {
-    id: string,
+export type SearchListingDTOInput = {
+    query?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    minBedrooms?: number,
+    maxBedrooms?: number,
+    propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+    listingType?: "SALE" | "RENT",
+    page: number,
+    pageSize: number
 }
 
-export type findListingByIdDTOOutput = {
+export type SearchListingsDTOOutput = {
     id: string,
     title: string,
     description: string | null,
@@ -26,4 +34,4 @@ export type findListingByIdDTOOutput = {
         bedrooms: number,
         bathrooms: number,
     }
-}
+}[]

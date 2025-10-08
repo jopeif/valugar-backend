@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { Address } from "../../../domain/entities/Address";
 import { Listing } from "../../../domain/entities/Listing";
 import { PropertyDetails } from "../../../domain/entities/PropertyDetail";
@@ -34,7 +35,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
             const listingEntity = Listing.build(
                 listing.title,
                 listing.type,
-                listing.category as "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
+                listing.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
                 Number(listing.basePrice),
                 listing.userId,
                 listing.description,
@@ -50,9 +51,88 @@ export class ListingRepositoryPrisma implements ListingRepository {
         }
     }
 
-    searchListings(query: string): Promise<Listing[]> {
-        throw new Error("Method not implemented.");
+    async searchListings(
+        query?: string,
+        minPrice?: number,
+        maxPrice?: number,
+        minBedrooms?: number,
+        maxBedrooms?: number,
+        propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+        listingType?: "SALE" | "RENT",
+        page: number = 1,
+        pageSize: number = 10
+    ): Promise<Listing[]> {
+        try {
+            const listings = await prisma.listing.findMany({
+                where: {
+                    AND: [
+                        query
+                            ? {
+                                OR: [
+                                    { title: { contains: query, mode: "insensitive" } },
+                                    { description: { contains: query, mode: "insensitive" } },
+                                    { address: { street: { contains: query, mode: "insensitive" } } },
+                                    { address: { neighborhood: { contains: query, mode: "insensitive" } } },
+                                    { address: { city: { contains: query, mode: "insensitive" } } },
+                                    { address: { zipCode: { contains: query, mode: "insensitive" } } },
+                                    { user: { name: { contains: query, mode: "insensitive" } } },
+                                ],
+                            }
+                            : {},
+                        minPrice ? { basePrice: { gte: minPrice } } : {},
+                        maxPrice ? { basePrice: { lte: maxPrice } } : {},
+                        minBedrooms ? { propertyDetails: { bedrooms: { gte: minBedrooms } } } : {},
+                        maxBedrooms ? { propertyDetails: { bedrooms: { lte: maxBedrooms } } } : {},
+                        propertyCategory ? { category: propertyCategory } : {},
+                        listingType ? { type: listingType } : {},
+                    ],
+                },
+                include: {
+                    address: true,
+                    propertyDetails: true,
+                    user: true,
+                },
+                skip: (page - 1) * pageSize,
+                take: pageSize,
+            });
+
+            return listings
+                .filter(l => l.address && l.propertyDetails)
+                .map(l => {
+                    const address = Address.build(
+                        l.address!.zipCode,
+                        l.address!.state,
+                        l.address!.city,
+                        l.address!.neighborhood,
+                        l.address!.street,
+                        l.address!.reference
+                    );
+
+                    const details = PropertyDetails.build(
+                        Number(l.propertyDetails!.area ?? 0),
+                        l.propertyDetails!.bedrooms ?? 0,
+                        l.propertyDetails!.bathrooms ?? 0
+                    );
+
+                    return Listing.build(
+                        l.title,
+                        l.type,
+                        l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+                        Number(l.basePrice),
+                        l.userId,
+                        l.description,
+                        l.iptu ? Number(l.iptu) : null,
+                        address,
+                        details
+                    );
+                });
+        } catch (error) {
+            console.error("Erro ao buscar listings no ListingRepositoryPrisma:", error);
+            throw error;
+        }
     }
+
+
     findByZipCode(zipCode: string): Promise<Listing | null> {
         throw new Error("Method not implemented.");
     }
@@ -155,7 +235,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
                         title: listingProps.title,
                         description: listingProps.description,
                         type: listingProps.type,
-                        category: listingProps.category as 'RESIDENCIAL' | 'COMMERCIAL' | 'MIXED_USE',
+                        category: listingProps.category as 'RESIDENTIAL' | 'COMMERCIAL' | 'MIXED_USE',
                         basePrice: listingProps.basePrice as number,
                         iptu: listingProps.iptu as number,
                         user: {

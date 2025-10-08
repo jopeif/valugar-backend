@@ -96,7 +96,7 @@ enum ListingType {
 }
 
 enum PropertyCategory {
-  RESIDENCIAL
+  RESIDENTIAL
   COMMERCIAL
   MIXED_USE
 }

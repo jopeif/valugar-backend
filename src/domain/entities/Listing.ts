@@ -7,7 +7,7 @@ export type ListingProps = {
     title: string,
     description: string | null,
     type: "SALE" | "RENT",
-    category: "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
+    category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
     basePrice: Number,
     iptu: Number | null,
     userId: string,
@@ -23,7 +23,7 @@ export class Listing {
     static build(
         title: string,
         type: "SALE" | "RENT",
-        category: "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
+        category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
         basePrice: number,
         userId: string,
         description: string | null,

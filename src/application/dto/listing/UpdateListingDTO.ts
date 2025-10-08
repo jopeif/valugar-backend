@@ -3,7 +3,7 @@ export type UpdateListingDTOInput = {
     title: string,
     description: string | null,
     type: "SALE" | "RENT",
-    category: "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
+    category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
     basePrice: Number,
     iptu: Number | null,
     userId: string,

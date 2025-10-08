@@ -5,7 +5,18 @@ import { PropertyDetails } from "../entities/PropertyDetail";
 export interface ListingRepository {
     save(listing:Listing, address: Address, details: PropertyDetails): Promise<string>;
     findById(id: string): Promise<Listing | null>;
-    searchListings(query: string): Promise<Listing[]>;
+    searchListings(
+        query?: string,
+        minPrice?: number,
+        maxPrice?: number,
+        minBedrooms?: number,
+        maxBedrooms?: number,
+        propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+        listingType?: "SALE" | "RENT",
+        page?: number,
+        pageSize?: number
+    ): Promise<Listing[]>
+
     findByZipCode(zipCode: string): Promise<Listing | null>;
     findAll(): Promise<Listing[]>;
     update(address: Listing): Promise<boolean>;

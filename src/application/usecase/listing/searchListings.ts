@@ -1,0 +1,52 @@
+import { ListingRepository } from "../../../domain/repositories/Listing.repository";
+import { SearchListingDTOInput, SearchListingsDTOOutput } from "../../dto/listing/SearchListingsDTO";
+import { UseCase } from "../UseCase";
+
+export class SearchListingsUseCase implements UseCase<SearchListingDTOInput, SearchListingsDTOOutput> {
+    constructor(private readonly listingRepo: ListingRepository) {}
+
+    async execute(input: SearchListingDTOInput): Promise<SearchListingsDTOOutput> {
+        try {
+            const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, page, pageSize } = input;
+
+            const listings = await this.listingRepo.searchListings(
+                query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, page, pageSize
+            );
+
+            return listings.map(listing => {
+                const props = listing.getProps();
+                const address = props.address.getProps();
+                const details = props.PropertyDetails.getProps();
+
+                return {
+                    id: props.id,
+                    title: props.title,
+                    description: props.description,
+                    type: props.type,
+                    category: props.category,
+                    basePrice: props.basePrice,
+                    iptu: props.iptu,
+                    userId: props.userId,
+                    createdAt: props.createdAt,
+                    updatedAt: props.updatedAt,
+                    address: {
+                        zipCode: address.zipCode,
+                        state: address.state,
+                        city: address.city,
+                        neighborhood: address.neighborhood,
+                        street: address.street,
+                        reference: address.reference ?? null,
+                    },
+                    details: {
+                        area: details.area,
+                        bedrooms: details.bedrooms,
+                        bathrooms: details.bathrooms,
+                    }
+                };
+            });
+        } catch (error) {
+            console.error("Erro no useCase", error);
+            throw error;
+        }
+    }
+}

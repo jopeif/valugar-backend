@@ -2,7 +2,7 @@ export type createListingDTOInput = {
     title: string,
     description?: string,
     type: "SALE" | "RENT",
-    category: "RESIDENCIAL" | "COMMERCIAL" | "MIXED_USE",
+    category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
     basePrice: number,
     iptu?: number,
     userId: string,

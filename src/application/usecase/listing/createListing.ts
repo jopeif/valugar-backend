@@ -17,7 +17,16 @@ export class CreateListingUseCase implements UseCase<createListingDTOInput, crea
             const detailsInstance = PropertyDetails.build(
                 details.area,
                 details.bedrooms,
-                details.bathrooms
+                details.bathrooms,
+
+                details.doesntPayWaterBill,
+                details.hasGarage,
+                details.isPetFriendly,
+                details.hasCeramicFlooring,
+                details.hasCeilingLining,
+                details.hasBackyard,
+                details.hasPool,
+                details.hasSolarPanel
             );
 
             const addressInstance = Address.build(

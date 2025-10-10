@@ -7,6 +7,10 @@ import { prisma } from "../prisma";
 
 export class ListingRepositoryPrisma implements ListingRepository {
     
+    findByZipCode(zipCode: string): Promise<Listing | null> {
+        throw new Error("Method not implemented.");
+    }
+    
     async findByUserId(id: string): Promise<Listing[] | null> {
         try {
             const listings = await prisma.listing.findMany({
@@ -32,7 +36,15 @@ export class ListingRepositoryPrisma implements ListingRepository {
                     const details = PropertyDetails.build(
                         Number(l.propertyDetails!.area ?? 0),
                         l.propertyDetails!.bedrooms ?? 0,
-                        l.propertyDetails!.bathrooms ?? 0
+                        l.propertyDetails!.bathrooms ?? 0,
+                        l.propertyDetails!.doesntPayWaterBill,
+                        l.propertyDetails!.hasGarage,
+                        l.propertyDetails!.isPetFriendly,
+                        l.propertyDetails!.hasCeramicFlooring,
+                        l.propertyDetails!.hasCeilingLining,
+                        l.propertyDetails!.hasBackyard,
+                        l.propertyDetails!.hasPool,
+                        l.propertyDetails!.hasSolarPanel,
                     );
 
                     return Listing.build(
@@ -77,7 +89,15 @@ export class ListingRepositoryPrisma implements ListingRepository {
             const details = PropertyDetails.build(
                 Number(listing.propertyDetails.area ?? 0),
                 listing.propertyDetails.bedrooms ?? 0,
-                listing.propertyDetails.bathrooms ?? 0
+                listing.propertyDetails.bathrooms ?? 0,
+                listing.propertyDetails.doesntPayWaterBill,
+                listing.propertyDetails.hasGarage,
+                listing.propertyDetails.isPetFriendly,
+                listing.propertyDetails.hasCeramicFlooring,
+                listing.propertyDetails.hasCeilingLining,
+                listing.propertyDetails.hasBackyard,
+                listing.propertyDetails.hasPool,
+                listing.propertyDetails.hasSolarPanel,
             );
 
             const listingEntity = Listing.build(
@@ -106,81 +126,14 @@ export class ListingRepositoryPrisma implements ListingRepository {
         minBedrooms?: number,
         maxBedrooms?: number,
         propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-        listingType?: "SALE" | "RENT",
-        page: number = 1,
-        pageSize: number = 10
+        listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
+        page: number = 1, pageSize: number = 10
     ): Promise<Listing[]> {
-        try {
-            const listings = await prisma.listing.findMany({
-                where: {
-                    AND: [
-                        query
-                            ? {
-                                OR: [
-                                    { title: { contains: query, mode: "insensitive" } },
-                                    { description: { contains: query, mode: "insensitive" } },
-                                    { address: { street: { contains: query, mode: "insensitive" } } },
-                                    { address: { neighborhood: { contains: query, mode: "insensitive" } } },
-                                    { address: { city: { contains: query, mode: "insensitive" } } },
-                                    { address: { zipCode: { contains: query, mode: "insensitive" } } },
-                                    { user: { name: { contains: query, mode: "insensitive" } } },
-                                ],
-                            }
-                            : {},
-                        minPrice ? { basePrice: { gte: minPrice } } : {},
-                        maxPrice ? { basePrice: { lte: maxPrice } } : {},
-                        minBedrooms ? { propertyDetails: { bedrooms: { gte: minBedrooms } } } : {},
-                        maxBedrooms ? { propertyDetails: { bedrooms: { lte: maxBedrooms } } } : {},
-                        propertyCategory ? { category: propertyCategory } : {},
-                        listingType ? { type: listingType } : {},
-                    ],
-                },
-                include: {
-                    address: true,
-                    propertyDetails: true,
-                    user: true,
-                },
-                skip: (page - 1) * pageSize,
-                take: pageSize,
-            });
-
-            return listings
-                .filter(l => l.address && l.propertyDetails)
-                .map(l => {
-                    const address = Address.build(
-                        l.address!.zipCode,
-                        l.address!.state,
-                        l.address!.city,
-                        l.address!.neighborhood,
-                        l.address!.street,
-                        l.address!.reference
-                    );
-
-                    const details = PropertyDetails.build(
-                        Number(l.propertyDetails!.area ?? 0),
-                        l.propertyDetails!.bedrooms ?? 0,
-                        l.propertyDetails!.bathrooms ?? 0
-                    );
-
-                    return Listing.build(
-                        l.title,
-                        l.type,
-                        l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-                        Number(l.basePrice),
-                        l.userId,
-                        l.description,
-                        l.iptu ? Number(l.iptu) : null,
-                        address,
-                        details
-                    );
-                });
-        } catch (error) {
-            console.error("Erro ao buscar listings no ListingRepositoryPrisma:", error);
-            throw error;
+        throw new Error("Method not implemented.")
         }
-    }
+    
 
-    findByZipCode(zipCode: string): Promise<Listing | null> {
+    asyncfindByZipCode(zipCode: string): Promise<Listing | null> {
         throw new Error("Method not implemented.");
     }
 
@@ -212,6 +165,14 @@ export class ListingRepositoryPrisma implements ListingRepository {
                 area: detailsProps.area,
                 bedrooms: detailsProps.bedrooms,
                 bathrooms: detailsProps.bathrooms,
+                doesntPayWaterBill: detailsProps.doesntPayWaterBill,
+                hasGarage: detailsProps.hasGarage,
+                isPetFriendly: detailsProps.isPetFriendly,
+                hasCeramicFlooring: detailsProps.hasCeramicFlooring,
+                hasCeilingLining: detailsProps.hasCeilingLining,
+                hasBackyard: detailsProps.hasBackyard,
+                hasPool: detailsProps.hasPool,
+                hasSolarPanel: detailsProps.hasSolarPanel,
                 },
             }),
             prisma.listing.update({
@@ -263,7 +224,17 @@ export class ListingRepositoryPrisma implements ListingRepository {
                         id: detailsProps.id,
                         area: detailsProps.area,
                         bedrooms: detailsProps.bedrooms,
-                        bathrooms: detailsProps.bathrooms
+                        bathrooms: detailsProps.bathrooms,
+                        doesntPayWaterBill: detailsProps.doesntPayWaterBill,
+                        hasGarage: detailsProps.hasGarage,
+                        isPetFriendly: detailsProps.isPetFriendly,
+                        hasCeramicFlooring: detailsProps.hasCeramicFlooring,
+                        hasCeilingLining: detailsProps.hasCeilingLining,
+                        hasBackyard: detailsProps.hasBackyard,
+                        hasPool: detailsProps.hasPool,
+                        hasSolarPanel: detailsProps.hasSolarPanel,
+
+                        
                     }
                 });
                 

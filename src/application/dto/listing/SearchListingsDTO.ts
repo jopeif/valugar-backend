@@ -5,7 +5,7 @@ export type SearchListingDTOInput = {
     minBedrooms?: number,
     maxBedrooms?: number,
     propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-    listingType?: "SALE" | "RENT",
+    listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
     page?: number,
     pageSize?: number
 }
@@ -14,7 +14,7 @@ export type SearchListingsDTOOutput = {
     id: string,
     title: string,
     description: string | null,
-    type: "SALE" | "RENT",
+    type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
     category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
     basePrice: Number,
     iptu: Number | null,
@@ -33,5 +33,13 @@ export type SearchListingsDTOOutput = {
         area: number,
         bedrooms: number,
         bathrooms: number,
+        hasGarage: boolean,
+        isPetFriendly: boolean,
+        hasCeramicFlooring: boolean,
+        hasCeilingLining: boolean,
+        hasBackyard: boolean,
+        hasPool: boolean,
+        hasSolarPanel: boolean,
+        
     }
 }[]

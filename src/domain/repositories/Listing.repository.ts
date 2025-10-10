@@ -12,7 +12,7 @@ export interface ListingRepository {
         minBedrooms?: number,
         maxBedrooms?: number,
         propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-        listingType?: "SALE" | "RENT",
+        listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
         page?: number,
         pageSize?: number
     ): Promise<Listing[]>

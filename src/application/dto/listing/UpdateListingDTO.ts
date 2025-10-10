@@ -2,7 +2,7 @@ export type UpdateListingDTOInput = {
     id: string,
     title: string,
     description: string | null,
-    type: "SALE" | "RENT",
+    type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
     category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
     basePrice: Number,
     iptu: Number | null,
@@ -21,6 +21,15 @@ export type UpdateListingDTOInput = {
         area: number,
         bedrooms: number,
         bathrooms: number,
+
+        doesntPayWaterBill: boolean,
+        hasGarage: boolean,
+        isPetFriendly: boolean,
+        hasCeramicFlooring: boolean,
+        hasCeilingLining: boolean,
+        hasBackyard: boolean,
+        hasPool: boolean,
+        hasSolarPanel: boolean,
     }
 }
 

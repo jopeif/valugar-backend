@@ -46,6 +46,17 @@ model PropertyDetail {
   area      Decimal? @db.Decimal(10, 2)
   bedrooms  Int?
   bathrooms Int?
+  
+  doesntPayWaterBill Boolean @default(false)
+  hasGarage Boolean @default(false)
+  isPetFriendly Boolean @default(false)
+  hasCeramicFlooring Boolean @default(false)
+  hasCeilingLining Boolean @default(false)
+  hasBackyard Boolean @default(false)
+  hasPool Boolean @default(false)
+  hasSolarPanel Boolean @default(false)
+
+
   listing   Listing?
 
   @@map("property_details")
@@ -91,8 +102,18 @@ model Role {
 }
 
 enum ListingType {
-  SALE
-  RENT
+  CASA
+  APARTAMENTO
+  KITNET
+  QUARTO
+  SITIO
+  OUTRO
+}
+
+enum ContactMethod {
+  EMAIL
+  PHONE
+  BOTH
 }
 
 enum PropertyCategory {

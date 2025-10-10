@@ -41,6 +41,13 @@ export class SearchListingsUseCase implements UseCase<SearchListingDTOInput, Sea
                         area: details.area,
                         bedrooms: details.bedrooms,
                         bathrooms: details.bathrooms,
+                        hasGarage: details.hasGarage,
+                        isPetFriendly: details.isPetFriendly,
+                        hasCeramicFlooring: details.hasCeramicFlooring,
+                        hasCeilingLining: details.hasCeilingLining,
+                        hasBackyard: details.hasBackyard,
+                        hasPool: details.hasPool,
+                        hasSolarPanel: details.hasSolarPanel,
                     }
                 };
             });

@@ -11,7 +11,7 @@ export class UpdateListingUseCase implements UseCase<UpdateListingDTOInput, Upda
 
   async execute(input: UpdateListingDTOInput): Promise<UpdateListingDTOOutput> {
     try {
-      // Reconstroi as entidades a partir do DTO
+      
       const address = Address.assemble({
         id: "addressId",
         zipCode: input.address.zipCode,
@@ -27,6 +27,15 @@ export class UpdateListingUseCase implements UseCase<UpdateListingDTOInput, Upda
         area: input.details.area,
         bedrooms: input.details.bedrooms,
         bathrooms: input.details.bathrooms,
+        doesntPayWaterBill: input.details.doesntPayWaterBill,
+        hasGarage: input.details.hasGarage,
+        isPetFriendly: input.details.isPetFriendly,
+        hasCeramicFlooring: input.details.hasCeramicFlooring,
+        hasCeilingLining: input.details.hasCeilingLining,
+        hasBackyard: input.details.hasBackyard,
+        hasPool: input.details.hasPool,
+        hasSolarPanel: input.details.hasSolarPanel,
+
       });
 
       const listing = Listing.assemble({

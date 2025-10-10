@@ -35,6 +35,14 @@ export class FindListingByIdUseCase implements UseCase<findListingByIdDTOInput, 
                     area: listing.getProps().PropertyDetails.getProps().area,
                     bedrooms: listing.getProps().PropertyDetails.getProps().bedrooms,
                     bathrooms: listing.getProps().PropertyDetails.getProps().bathrooms,
+
+                    hasGarage: listing.getProps().PropertyDetails.getProps().hasGarage,
+                    isPetFriendly: listing.getProps().PropertyDetails.getProps().isPetFriendly,
+                    hasCeramicFlooring: listing.getProps().PropertyDetails.getProps().hasCeilingLining,
+                    hasCeilingLining: listing.getProps().PropertyDetails.getProps().hasBackyard,
+                    hasBackyard: listing.getProps().PropertyDetails.getProps().hasBackyard,
+                    hasPool: listing.getProps().PropertyDetails.getProps().hasPool,
+                    hasSolarPanel: listing.getProps().PropertyDetails.getProps().hasSolarPanel,
                 }
             };
 

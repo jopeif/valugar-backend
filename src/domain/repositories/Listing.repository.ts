@@ -14,7 +14,16 @@ export interface ListingRepository {
         propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
         listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
         page?: number,
-        pageSize?: number
+        pageSize?: number,
+        details?:{
+            "hasGarage"?: boolean,
+            "isPetFriendly": boolean,
+            "hasCeramicFlooring": boolean,
+            "hasCeilingLining": boolean,
+            "hasBackyard": boolean,
+            "hasPool": boolean,
+            "hasSolarPanel": boolean
+        }
     ): Promise<Listing[]>
     findByUserId(id: string): Promise<Listing[]|null>
     findByZipCode(zipCode: string): Promise<Listing | null>;

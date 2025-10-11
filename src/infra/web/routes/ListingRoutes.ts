@@ -72,7 +72,7 @@ router.delete("/:id", authMiddleware, adminMiddleware, (req, res) => container.l
  *             schema:
  *               $ref: '#/components/schemas/FindListingByIdDTO'
  */
-router.get("find/:id", (req, res) => {container.listingController.findById(req, res);});
+router.get("/find/:id", (req, res) => {container.listingController.findById(req, res);});
 
 
 //TERMINAR ESSA ROTA DEPOIS. INCOMPLETA!!
@@ -103,9 +103,10 @@ router.get("find/:id", (req, res) => {container.listingController.findById(req, 
  *             schema:
  *               $ref: '#/components/schemas/UpdateListingDTOOutput'
  */
-router.put("/:id", (req, res) => {
+router.put("update/:id", (req, res) => {
   container.listingController.update(req, res);
 });
+
 
 router.get("/search/", (req, res) => {
   container.listingController.searchListings(req, res);

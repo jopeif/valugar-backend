@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../../generated/prisma";
 import { Address } from "../../../domain/entities/Address";
 import { Listing } from "../../../domain/entities/Listing";
 import { PropertyDetails } from "../../../domain/entities/PropertyDetail";
@@ -120,6 +120,8 @@ export class ListingRepositoryPrisma implements ListingRepository {
     }
 
     async searchListings(
+        page: number = 1,
+        pageSize: number = 10,
         query?: string,
         minPrice?: number,
         maxPrice?: number,
@@ -127,10 +129,125 @@ export class ListingRepositoryPrisma implements ListingRepository {
         maxBedrooms?: number,
         propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
         listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
-        page: number = 1, pageSize: number = 10
-    ): Promise<Listing[]> {
-        throw new Error("Method not implemented.")
+        details?: {
+            hasGarage?: boolean;
+            isPetFriendly?: boolean;
+            hasCeramicFlooring?: boolean;
+            hasCeilingLining?: boolean;
+            hasBackyard?: boolean;
+            hasPool?: boolean;
+            hasSolarPanel?: boolean;
+        },
+        
+    ): Promise<{ listings: Listing[]; totalPages: number }> {
+
+        try {
+            const where: Prisma.ListingWhereInput = {
+                AND: [
+                    query
+                        ? {
+                            OR: [
+                                { title: { contains: query, mode: "insensitive" } },
+                                { description: { contains: query, mode: "insensitive" } },
+                                { address: { city: { contains: query, mode: "insensitive" } } },
+                                { address: { neighborhood: { contains: query, mode: "insensitive" } } },
+                            ],
+                        }
+                        : undefined,
+
+                    minPrice != null || maxPrice != null
+                        ? {
+                            basePrice: {
+                                ...(minPrice != null ? { gte: minPrice } : {}),
+                                ...(maxPrice != null ? { lte: maxPrice } : {}),
+                            },
+                        }
+                        : undefined,
+
+                    propertyCategory ? { category: propertyCategory } : undefined,
+                    listingType ? { type: listingType } : undefined,
+
+                    minBedrooms != null || maxBedrooms != null
+                        ? {
+                            propertyDetails: {
+                                bedrooms: {
+                                    ...(minBedrooms != null ? { gte: minBedrooms } : {}),
+                                    ...(maxBedrooms != null ? { lte: maxBedrooms } : {}),
+                                },
+                            },
+                        }
+                        : undefined,
+
+                    details
+                        ? {
+                            propertyDetails: Object.fromEntries(
+                                Object.entries(details).filter(([_, v]) => v === true)
+                            ),
+                        }
+                        : undefined,
+                ].filter(Boolean) as Prisma.ListingWhereInput[],
+            };
+
+            const [totalCount, listingsRaw] = await Promise.all([
+                prisma.listing.count({ where }),
+                prisma.listing.findMany({
+                    where,
+                    include: { address: true, propertyDetails: true },
+                    skip: (page - 1) * pageSize,
+                    take: pageSize,
+                    orderBy: { createdAt: "desc" },
+                }),
+            ]);
+
+            const totalPages = Math.ceil(totalCount / pageSize);
+
+            const listings = listingsRaw
+                .filter(l => l.address && l.propertyDetails)
+                .map(l => {
+                    const address = Address.build(
+                        l.address!.zipCode,
+                        l.address!.state,
+                        l.address!.city,
+                        l.address!.neighborhood,
+                        l.address!.street,
+                        l.address!.reference
+                    );
+
+                    const props = l.propertyDetails!;
+                    const details = PropertyDetails.build(
+                        Number(props.area ?? 0),
+                        props.bedrooms ?? 0,
+                        props.bathrooms ?? 0,
+                        props.doesntPayWaterBill,
+                        props.hasGarage,
+                        props.isPetFriendly,
+                        props.hasCeramicFlooring,
+                        props.hasCeilingLining,
+                        props.hasBackyard,
+                        props.hasPool,
+                        props.hasSolarPanel
+                    );
+
+                    return Listing.build(
+                        l.title,
+                        l.type,
+                        l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+                        Number(l.basePrice),
+                        l.userId,
+                        l.description,
+                        l.iptu ? Number(l.iptu) : null,
+                        address,
+                        details
+                    );
+                });
+
+            return { listings, totalPages };
+
+        } catch (error) {
+            console.error("Erro ao buscar listings no ListingRepositoryPrisma:", error);
+            throw error;
         }
+    }
     
 
     asyncfindByZipCode(zipCode: string): Promise<Listing | null> {
@@ -200,10 +317,10 @@ export class ListingRepositoryPrisma implements ListingRepository {
     async delete(id: string): Promise<boolean> {
         try {
             await prisma.listing.delete({
-                where: { id }
-            });
+                where:{id}
+            })
             return true;
-        } catch (error) {
+            }catch (error) {
             console.log("Erro ao deletar listing no ListingRepositoryPrisma:", error);
             throw error;
         }

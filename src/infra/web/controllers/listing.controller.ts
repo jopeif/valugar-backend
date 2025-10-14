@@ -77,13 +77,13 @@ export class listingController{
 
     public async searchListings(req: Request, res: Response){
         try {
-            const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, page, pageSize } = req.body
+            const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details, page, pageSize } = req.body
             
-            if(!query || typeof query !== 'string'){
-                res.status(400).json({message:"Um termo de pesquisa deve ser enviado"})
+            if(!query || query===""){
+                throw new Error("Um termo de pesquisa deve ser enviado.")
             }
 
-            const result = await this.searchListingsUseCase.execute({query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory,listingType, page, pageSize})
+            const result = await this.searchListingsUseCase.execute({query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details, page, pageSize})
             res.status(200).json(result);
         } catch (error) {
             res.status(400).json({ error })

@@ -50,7 +50,7 @@ router.post("/register/", (req, res) => container.listingController.create(req, 
  *       200:
  *         description: Anúncio deletado com sucesso
  */
-router.delete("/:id", authMiddleware, adminMiddleware, (req, res) => container.listingController.delete(req, res));
+router.delete("/:id", (req, res) => container.listingController.delete(req, res));
 
 /**
  * @swagger

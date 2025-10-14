@@ -7,13 +7,18 @@ export class SearchListingsUseCase implements UseCase<SearchListingDTOInput, Sea
 
     async execute(input: SearchListingDTOInput): Promise<SearchListingsDTOOutput> {
         try {
-            const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, page, pageSize } = input;
+            const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details, page, pageSize } = input;
 
+            
             const listings = await this.listingRepo.searchListings(
-                query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, page, pageSize
+                page, pageSize, query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details
             );
+            
+            const {totalPages} = listings
 
-            return listings.map(listing => {
+            
+            const result = {
+                listings:listings.listings.map(listing => {
                 const props = listing.getProps();
                 const address = props.address.getProps();
                 const details = props.PropertyDetails.getProps();
@@ -50,7 +55,12 @@ export class SearchListingsUseCase implements UseCase<SearchListingDTOInput, Sea
                         hasSolarPanel: details.hasSolarPanel,
                     }
                 };
-            });
+
+            }),
+            totalPages}
+
+            return result
+        
         } catch (error) {
             console.error("Erro no useCase", error);
             throw error;

@@ -1,7 +1,7 @@
 import { RefreshTokenRepository } from "../../../domain/repositories/refreshToken.repository";
 import { UserRepository } from "../../../domain/repositories/User.repository";
 import { config } from "../../../infra/config/config";
-import { MailProvider } from "../../../infra/web/providers/MailProvider";
+import { MailProvider } from "../../../infra/web/providers/email/MailProvider";
 import { LoginInput, LoginOutput } from "../../dto/auth/LoginDTO";
 import { UseCase } from "../UseCase";
 import jwt from "jsonwebtoken";

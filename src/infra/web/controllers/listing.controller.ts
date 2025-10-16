@@ -1,3 +1,4 @@
+import { UploadMediaUseCase } from './../../../application/usecase/media.ts/uploadMedia';
 import { CreateListingUseCase } from "../../../application/usecase/listing/createListing";
 import { Request, Response } from "express";
 import { DeleteListingUseCase } from "../../../application/usecase/listing/deleteListing";
@@ -5,6 +6,7 @@ import { FindListingByIdUseCase } from "../../../application/usecase/listing/fin
 import { UpdateListingUseCase } from "../../../application/usecase/listing/updateListing";
 import { SearchListingsUseCase } from "../../../application/usecase/listing/searchListings";
 import { FindListingByUserUseCase } from "../../../application/usecase/listing/findListingByUser";
+import { FindMediaByListingIdUseCase } from '../../../application/usecase/media.ts/findMediaByListing';
 
 export class listingController{
 
@@ -15,6 +17,8 @@ export class listingController{
         public readonly updateListingUseCase: UpdateListingUseCase,
         public readonly searchListingsUseCase: SearchListingsUseCase,
         public readonly findListingByUserUseCase: FindListingByUserUseCase,
+        public readonly uploadMediaUseCase: UploadMediaUseCase,
+        public readonly findMediaByListingUseCase: FindMediaByListingIdUseCase,
     ){}
 
     public async create(req:Request, res:Response){
@@ -105,5 +109,35 @@ export class listingController{
         }
     }
 
+    async uploadMedia(req: Request, res: Response) {
+        try {
+            const { listingId } = req.params;
+            if(!listingId){
+                throw new Error("ListingId é obrigatório.")
+            }
+            const {title, description} = req.body
+            const files = req.files as Express.Multer.File[];
 
+            const result = await this.uploadMediaUseCase.execute({title, description, listingId, files});
+            res.status(201).json(result);
+        } catch (error) {
+            res.status(400).json({ message: error });
+        }
+    }
+
+    async findMedia(req: Request, res: Response) {
+        try {
+            const { listingId } = req.params;
+            if(!listingId){
+                throw new Error("ListingId é obrigatório.")
+            }
+
+            const result = await this.findMediaByListingUseCase.execute({id:listingId})
+            res.status(200).json(result)
+        } catch (error) {
+            res.status(400).json({ message: error });
+        }
+    }
 }
+
+

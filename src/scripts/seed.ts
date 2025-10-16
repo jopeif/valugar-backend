@@ -5,7 +5,7 @@ import { CreateListingUseCase } from '../application/usecase/listing/createListi
 import { UserRepositoryPrisma } from '../infra/db/concrete.prisma/userRepository.prisma';
 import { RefreshTokenRepositoryPrisma } from '../infra/db/concrete.prisma/refreshTokenRepository.prisma';
 import { ListingRepositoryPrisma } from '../infra/db/concrete.prisma/listingRepository.prisma';
-import { NodemailerMailProvider } from '../infra/web/providers/nodemailerMailProvider';
+import { NodemailerMailProvider } from '../infra/web/providers/email/nodemailerMailProvider';
 import { createListingDTOInput } from '../application/dto/listing/CreateListingDTO';
 import { prisma } from '../infra/db/prisma';
 
@@ -26,7 +26,7 @@ import { prisma } from '../infra/db/prisma';
     await prisma.user.deleteMany()
     await prisma.refreshToken.deleteMany()
 
-    console.log('👤 Criando usuários de teste...');
+    console.log('Criando usuários de teste...');
     const users = [
       { name: 'João Silva', email: 'joaopedrodelimacarlos@gmail.com', password: '.Jplc1203', phone: '88999999999' },
       { name: 'Maria Souza', email: 'maria@test12345667.com', password: '.Jplc1203', phone: '88988888888' },
@@ -40,13 +40,13 @@ import { prisma } from '../infra/db/prisma';
       userIds.push(result.id);
     }
 
-    console.log('🔑 Fazendo login para gerar tokens...');
+    console.log('Fazendo login para gerar tokens...');
     for (const user of users) {
       const { accessToken } = await loginUser.execute({ email: user.email, password: user.password });
       console.log(`Token de ${user.email}: ${accessToken.substring(0, 20)}...`);
     }
 
-    console.log('🏠 Criando listings...');
+    console.log('Criando listings...');
     const listings: createListingDTOInput[] = [];
 
 const cities = [
@@ -109,9 +109,9 @@ console.log(listings);
       console.log(`Listing criado (${l.title}): ${id}`);
     }
 
-    console.log('✅ Seed concluído com sucesso!');
+    console.log('Seed concluído com sucesso!');
   } catch (error) {
-    console.error('❌ Erro no seed:', error);
+    console.error('Erro no seed:', error);
   } finally {
 
   }

@@ -3,7 +3,7 @@ import { UserRepository } from "../../../domain/repositories/User.repository";
 import { RegisterUserInput, RegisterUserOutput } from "../../dto/auth/RegisterUserDTO";
 import { UseCase } from "../UseCase";
 import jwt from "jsonwebtoken";
-import { MailProvider } from "../../../infra/web/providers/MailProvider";
+import { MailProvider } from "../../../infra/web/providers/email/MailProvider";
 
 export class RegisterUserUseCase implements UseCase<RegisterUserInput, RegisterUserOutput> {
     constructor(private readonly userRepository: UserRepository, private readonly mailProvider: MailProvider) {}

@@ -18,7 +18,10 @@ import { RefreshTokenRepositoryPrisma } from "../infra/db/concrete.prisma/refres
 import { UserRepositoryPrisma } from "../infra/db/concrete.prisma/userRepository.prisma";
 import { AuthController } from "../infra/web/controllers/auth.controller";
 import { listingController } from "../infra/web/controllers/listing.controller";
-import { NodemailerMailProvider } from "../infra/web/providers/nodemailerMailProvider";
+import { NodemailerMailProvider } from "../infra/web/providers/email/nodemailerMailProvider";
+import { UploadMediaUseCase } from '../application/usecase/media.ts/uploadMedia';
+import { MediaRepositoryPrisma } from '../infra/db/concrete.prisma/mediaRepository.prisma';
+import { FindMediaByListingIdUseCase } from '../application/usecase/media.ts/findMediaByListing';
 
 export class Container{
 
@@ -43,6 +46,7 @@ export class Container{
     public get listingController(): listingController {
         const listingRepo = new ListingRepositoryPrisma()
         const authRepo = new UserRepositoryPrisma()
+        const mediaRepo = new MediaRepositoryPrisma()
 
         const createListingUseCase = new CreateListingUseCase(listingRepo)
         const deleteListingUseCase = new DeleteListingUseCase(listingRepo)
@@ -50,7 +54,9 @@ export class Container{
         const updateListingUC = new UpdateListingUseCase(listingRepo)
         const searchListingsUC = new SearchListingsUseCase(listingRepo)
         const findListingByUserUC = new FindListingByUserUseCase(listingRepo, authRepo)
+        const uploadMediaUC = new UploadMediaUseCase(mediaRepo, listingRepo)
+        const findMediaByListingUC = new FindMediaByListingIdUseCase(mediaRepo, listingRepo)
 
-        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase, updateListingUC, searchListingsUC, findListingByUserUC);
+        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase, updateListingUC, searchListingsUC, findListingByUserUC, uploadMediaUC, findMediaByListingUC);
     }
 }

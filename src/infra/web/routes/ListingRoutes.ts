@@ -2,6 +2,7 @@ import { Router } from "express";
 import { ContainerFactory } from "../../../di/containerFactory";
 import { adminMiddleware } from "../middlewares/adminMiddleware";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { uploadMiddleware } from "../middlewares/uploadMiddleware";
 
 const router = Router();
 const container = ContainerFactory.getContainer();
@@ -115,7 +116,20 @@ router.get("/search/", (req, res) => {
 router.get("/user/:id", (req, res) => {
   container.listingController.findListingByUser(req, res)
 })
+  
+router.post(
+  "/media/:listingId",
+  uploadMiddleware.array("files", 10),
+  (req, res)=>{
+    container.listingController.uploadMedia(req, res)
+  }
+);
 
+router.get(
+  "/media/:listingId", (req, res)=>{
+    container.listingController.findMedia(req, res)
+  }
+)
 
 
 export default router;

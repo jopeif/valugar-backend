@@ -1,6 +1,6 @@
 import { User } from "../../../domain/entities/User";
 import { UserRepository } from "../../../domain/repositories/User.repository";
-import { MailProvider } from "../../../infra/web/providers/mailProvider";
+import { MailProvider } from "../../../infra/web/providers/email/MailProvider";
 import { RegisterAdminInput, RegisterAdminOutput } from "../../dto/auth/RegisterAdminDTO";
 import { UseCase } from "../UseCase";
 import jwt from "jsonwebtoken";

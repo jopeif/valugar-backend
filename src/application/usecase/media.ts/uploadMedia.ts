@@ -5,6 +5,7 @@ import path from "path";
 import { UseCase } from "../UseCase";
 import { UploadMediaDTOInput, UploadMediaDTOOutput } from "../../dto/media/UploadMediaDTO";
 import { ListingRepository } from "../../../domain/repositories/Listing.repository";
+import { cleanupMedia } from "../../../scripts/cleanupMedia";
 
 
 export class UploadMediaUseCase implements UseCase<UploadMediaDTOInput, UploadMediaDTOOutput>{
@@ -28,6 +29,7 @@ export class UploadMediaUseCase implements UseCase<UploadMediaDTOInput, UploadMe
             const url = `/uploads/${path.basename(file.filename)}`;
 
             const media = Media.build(title, description, type, url, listingId)
+            cleanupMedia()
             return await this.mediaRepo.save(media)
         })
         );

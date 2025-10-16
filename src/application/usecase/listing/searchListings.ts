@@ -21,7 +21,7 @@ export class SearchListingsUseCase implements UseCase<SearchListingDTOInput, Sea
                 listings:listings.listings.map(listing => {
                 const props = listing.getProps();
                 const address = props.address.getProps();
-                const details = props.PropertyDetails.getProps();
+                const details = props.propertyDetails.getProps();
 
                 return {
                     id: props.id,

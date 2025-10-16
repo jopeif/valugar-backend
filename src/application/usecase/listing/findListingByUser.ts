@@ -24,7 +24,7 @@ export class FindListingByUserUseCase implements UseCase<FindListingByUserDTOInp
             return listings.map(listing => {
                 const props = listing.getProps();
                 const address = props.address.getProps();
-                const details = props.PropertyDetails.getProps();
+                const details = props.propertyDetails.getProps();
 
                 return {
                     id: props.id,

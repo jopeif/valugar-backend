@@ -5,7 +5,7 @@ import path from "path";
 const prisma = new PrismaClient();
 const UPLOAD_DIR = path.resolve(__dirname, "../../uploads");
 
-async function cleanupMedia() {
+export async function cleanupMedia() {
   console.log("🔍 Iniciando limpeza de mídias...");
 
   // 1️⃣ Busca todas as mídias no banco

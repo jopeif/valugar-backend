@@ -104,7 +104,7 @@ router.get("/find/:id", (req, res) => {container.listingController.findById(req,
  *             schema:
  *               $ref: '#/components/schemas/UpdateListingDTOOutput'
  */
-router.put("update/:id", (req, res) => {
+router.put("/update/:id", (req, res) => {
   container.listingController.update(req, res);
 });
 

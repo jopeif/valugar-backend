@@ -6,54 +6,97 @@ import { UpdateListingDTOInput, UpdateListingDTOOutput } from "../../dto/listing
 import { UseCase } from "../UseCase";
 
 export class UpdateListingUseCase implements UseCase<UpdateListingDTOInput, UpdateListingDTOOutput> {
-
   constructor(private readonly listingRepo: ListingRepository) {}
 
   async execute(input: UpdateListingDTOInput): Promise<UpdateListingDTOOutput> {
     try {
-      
-      const address = Address.assemble({
-        id: "addressId",
-        zipCode: input.address.zipCode,
-        state: input.address.state,
-        city: input.address.city,
-        neighborhood: input.address.neighborhood,
-        street: input.address.street,
-        reference: input.address.reference ?? null,
-      });
+      const listingVerifier = await this.listingRepo.findById(input.id);
+      if (!listingVerifier) {
+        throw new Error("Imóvel não existe.");
+      }
 
-      const propertyDetails = PropertyDetails.assemble({
-        id: input.id, 
-        area: input.details.area,
-        bedrooms: input.details.bedrooms,
-        bathrooms: input.details.bathrooms,
-        doesntPayWaterBill: input.details.doesntPayWaterBill,
-        hasGarage: input.details.hasGarage,
-        isPetFriendly: input.details.isPetFriendly,
-        hasCeramicFlooring: input.details.hasCeramicFlooring,
-        hasCeilingLining: input.details.hasCeilingLining,
-        hasBackyard: input.details.hasBackyard,
-        hasPool: input.details.hasPool,
-        hasSolarPanel: input.details.hasSolarPanel,
-
-      });
-
-      const listing = Listing.assemble({
-        id: input.id,
-        title: input.title,
-        description: input.description,
-        type: input.type,
-        category: input.category,
-        basePrice: input.basePrice,
-        iptu: input.iptu,
-        userId: input.userId,
-        createdAt: input.createdAt,
-        updatedAt: new Date(),
+      const {
+        id,
+        title,
+        description,
+        type,
+        category,
+        basePrice,
+        iptu,
+        userId,
+        createdAt,
         address,
-        PropertyDetails: propertyDetails,
+        propertyDetails,
+      } = listingVerifier.getProps();
+
+      const {
+        id: addressId,
+        zipCode,
+        state,
+        city,
+        neighborhood,
+        street,
+        reference,
+      } = address.getProps();
+
+      const {
+        id: detailsId,
+        area,
+        bedrooms,
+        bathrooms,
+        doesntPayWaterBill,
+        hasGarage,
+        isPetFriendly,
+        hasCeramicFlooring,
+        hasCeilingLining,
+        hasBackyard,
+        hasPool,
+        hasSolarPanel,
+      } = propertyDetails.getProps();
+
+      const mergedAddress = Address.assemble({
+        id: addressId,
+        zipCode: input.address?.zipCode ?? zipCode,
+        state: input.address?.state ?? state,
+        city: input.address?.city ?? city,
+        neighborhood: input.address?.neighborhood ?? neighborhood,
+        street: input.address?.street ?? street,
+        reference: input.address?.reference ?? reference,
       });
 
-      await this.listingRepo.update(listing);
+      const mergedDetails = PropertyDetails.assemble({
+        id: detailsId,
+        area: input.details?.area ?? area,
+        bedrooms: input.details?.bedrooms ?? bedrooms,
+        bathrooms: input.details?.bathrooms ?? bathrooms,
+        doesntPayWaterBill: input.details?.doesntPayWaterBill ?? doesntPayWaterBill,
+        hasGarage: input.details?.hasGarage ?? hasGarage,
+        isPetFriendly: input.details?.isPetFriendly ?? isPetFriendly,
+        hasCeramicFlooring: input.details?.hasCeramicFlooring ?? hasCeramicFlooring,
+        hasCeilingLining: input.details?.hasCeilingLining ?? hasCeilingLining,
+        hasBackyard: input.details?.hasBackyard ?? hasBackyard,
+        hasPool: input.details?.hasPool ?? hasPool,
+        hasSolarPanel: input.details?.hasSolarPanel ?? hasSolarPanel,
+      });
+
+      const mergedListing = Listing.assemble({
+        id,
+        title: input.title ?? title,
+        description: input.description ?? description,
+        type: input.type ?? type,
+        category: input.category ?? category,
+        basePrice: input.basePrice ?? basePrice,
+        iptu: input.iptu ?? iptu,
+        userId,
+        createdAt,
+        updatedAt: new Date(),
+        address: mergedAddress,
+        propertyDetails: mergedDetails,
+      });
+
+      console.log(mergedListing.getProps().address.getProps().id)
+
+      await this.listingRepo.update(mergedListing);
 
       return { success: true };
     } catch (error) {

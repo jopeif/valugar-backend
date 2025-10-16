@@ -52,13 +52,13 @@ export class listingController{
 
             const { id } = req.params
             
-            if(!id){
+            if(!id || id.trim()===""){
                 res.status(400).json({error: "ID is required"})
                 return
             }
 
-            const { title, description, type, category, basePrice, iptu, userId, address, details, createdAt, updatedAt } = req.body;
-            const result = await this.updateListingUseCase.execute({ id, title, description, type, category, basePrice, iptu, userId, address, details, createdAt, updatedAt })
+            const { title, description, type, category, basePrice, iptu, address, details} = req.body;
+            const result = await this.updateListingUseCase.execute({ id, title, description, type, category, basePrice, iptu, address, details })
 
             res.status(200).json(result)
         } catch (error) {
@@ -81,6 +81,7 @@ export class listingController{
 
     public async searchListings(req: Request, res: Response){
         try {
+            console.log("Cheguei aqui.")
             const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details, page, pageSize } = req.body
             
             if(!query || query===""){

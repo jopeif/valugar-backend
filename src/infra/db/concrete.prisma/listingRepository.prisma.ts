@@ -24,40 +24,46 @@ export class ListingRepositoryPrisma implements ListingRepository {
             return listings
                 .filter(l => l.address && l.propertyDetails)
                 .map(l => {
-                    const address = Address.build(
-                        l.address!.zipCode,
-                        l.address!.state,
-                        l.address!.city,
-                        l.address!.neighborhood,
-                        l.address!.street,
-                        l.address!.reference
-                    );
+                    const address = Address.assemble({
+                        id: l.address!.id,
+                        zipCode: l.address!.zipCode,
+                        state: l.address!.state,
+                        city: l.address!.city,
+                        neighborhood: l.address!.neighborhood,
+                        street: l.address!.street,
+                        reference: l.address!.reference
+                    });
 
-                    const details = PropertyDetails.build(
-                        Number(l.propertyDetails!.area ?? 0),
-                        l.propertyDetails!.bedrooms ?? 0,
-                        l.propertyDetails!.bathrooms ?? 0,
-                        l.propertyDetails!.doesntPayWaterBill,
-                        l.propertyDetails!.hasGarage,
-                        l.propertyDetails!.isPetFriendly,
-                        l.propertyDetails!.hasCeramicFlooring,
-                        l.propertyDetails!.hasCeilingLining,
-                        l.propertyDetails!.hasBackyard,
-                        l.propertyDetails!.hasPool,
-                        l.propertyDetails!.hasSolarPanel,
-                    );
+                    const details = PropertyDetails.assemble({
+                        id: l.propertyDetails?.id!,
+                        area: Number(l.propertyDetails!.area ?? 0),
+                        bedrooms: l.propertyDetails!.bedrooms ?? 0,
+                        bathrooms: l.propertyDetails!.bathrooms ?? 0,
+                        doesntPayWaterBill: l.propertyDetails!.doesntPayWaterBill,
+                        hasGarage:l.propertyDetails!.hasGarage,
+                        isPetFriendly:l.propertyDetails!.isPetFriendly,
+                        hasCeramicFlooring:l.propertyDetails!.hasCeramicFlooring,
+                        hasCeilingLining:l.propertyDetails!.hasCeilingLining,
+                        hasBackyard:l.propertyDetails!.hasBackyard,
+                        hasPool:l.propertyDetails!.hasPool,
+                        hasSolarPanel:l.propertyDetails!.hasSolarPanel,
+                    });
 
-                    return Listing.build(
-                        l.title,
-                        l.type,
-                        l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-                        Number(l.basePrice),
-                        l.userId,
-                        l.description,
-                        l.iptu ? Number(l.iptu) : null,
+                    return Listing.assemble({
+                        id: l.id,
+                        title:l.title,
+                        type:l.type,
+                        category: l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+                        basePrice: Number(l.basePrice),
+                        userId: l.userId,
+                        description: l.description,
+                        iptu: l.iptu ? Number(l.iptu) : null,
                         address,
-                        details
-                    );
+                        propertyDetails: details,
+                        createdAt: l.createdAt!,
+                        updatedAt: l.updatedAt
+
+                    });
                 });
 
 
@@ -77,39 +83,51 @@ export class ListingRepositoryPrisma implements ListingRepository {
                 return null;
             }
 
-            const address = Address.build(
-                listing.address.zipCode,
-                listing.address.state,
-                listing.address.city,
-                listing.address.neighborhood,
-                listing.address.street,
-                listing.address.reference
+            const address = Address.assemble(
+                {
+                id: listing.address.id,
+                zipCode: listing.address.zipCode,
+                state: listing.address.state,
+                city: listing.address.city,
+                neighborhood: listing.address.neighborhood,
+                street: listing.address.street,
+                reference: listing.address.reference
+                }
             );
 
-            const details = PropertyDetails.build(
-                Number(listing.propertyDetails.area ?? 0),
-                listing.propertyDetails.bedrooms ?? 0,
-                listing.propertyDetails.bathrooms ?? 0,
-                listing.propertyDetails.doesntPayWaterBill,
-                listing.propertyDetails.hasGarage,
-                listing.propertyDetails.isPetFriendly,
-                listing.propertyDetails.hasCeramicFlooring,
-                listing.propertyDetails.hasCeilingLining,
-                listing.propertyDetails.hasBackyard,
-                listing.propertyDetails.hasPool,
-                listing.propertyDetails.hasSolarPanel,
+            const details = PropertyDetails.assemble(
+                {
+                    id: listing.propertyDetails.id,
+                    area:Number(listing.propertyDetails.area ?? 0),
+                    bedrooms: listing.propertyDetails.bedrooms ?? 0,
+                    bathrooms: listing.propertyDetails.bathrooms ?? 0,
+                    doesntPayWaterBill: listing.propertyDetails.doesntPayWaterBill,
+                    hasGarage: listing.propertyDetails.hasGarage,
+                    isPetFriendly: listing.propertyDetails.isPetFriendly,
+                    hasCeramicFlooring:listing.propertyDetails.hasCeramicFlooring,
+                    hasCeilingLining: listing.propertyDetails.hasCeilingLining,
+                    hasBackyard: listing.propertyDetails.hasBackyard,
+                    hasPool: listing.propertyDetails.hasPool,
+                    hasSolarPanel: listing.propertyDetails.hasSolarPanel,
+                }
             );
 
-            const listingEntity = Listing.build(
-                listing.title,
-                listing.type,
-                listing.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-                Number(listing.basePrice),
-                listing.userId,
-                listing.description,
-                listing.iptu ? Number(listing.iptu) : null,
-                address,
-                details
+            const listingEntity = Listing.assemble(
+                {
+                    id: listing.id,
+                    title:listing.title,
+                    type: listing.type,
+                    category: listing.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+                    basePrice: Number(listing.basePrice),
+                    userId: listing.userId,
+                    description: listing.description,
+                    iptu: listing.iptu ? Number(listing.iptu) : null,
+                    address: address,
+                    propertyDetails: details,
+                    createdAt: listing.createdAt!,
+                    updatedAt: listing.updatedAt ?? new Date()
+
+                }
             );
 
             return listingEntity;
@@ -204,41 +222,48 @@ export class ListingRepositoryPrisma implements ListingRepository {
             const listings = listingsRaw
                 .filter(l => l.address && l.propertyDetails)
                 .map(l => {
-                    const address = Address.build(
-                        l.address!.zipCode,
-                        l.address!.state,
-                        l.address!.city,
-                        l.address!.neighborhood,
-                        l.address!.street,
-                        l.address!.reference
+                    const address = Address.assemble({
+                        id: l.address?.id!,
+                        zipCode: l.address!.zipCode,
+                        state: l.address!.state,
+                        city: l.address!.city,
+                        neighborhood: l.address!.neighborhood,
+                        street: l.address!.street,
+                        reference: l.address!.reference
+                        }
                     );
 
                     const props = l.propertyDetails!;
-                    const details = PropertyDetails.build(
-                        Number(props.area ?? 0),
-                        props.bedrooms ?? 0,
-                        props.bathrooms ?? 0,
-                        props.doesntPayWaterBill,
-                        props.hasGarage,
-                        props.isPetFriendly,
-                        props.hasCeramicFlooring,
-                        props.hasCeilingLining,
-                        props.hasBackyard,
-                        props.hasPool,
-                        props.hasSolarPanel
-                    );
+                    const details = PropertyDetails.assemble({
+                        id: props.id,
+                        area: Number(props.area ?? 0),
+                        bedrooms: props.bedrooms ?? 0,
+                        bathrooms: props.bathrooms ?? 0,
+                        doesntPayWaterBill: props.doesntPayWaterBill,
+                        hasGarage:props.hasGarage,
+                        isPetFriendly: props.isPetFriendly,
+                        hasCeramicFlooring: props.hasCeramicFlooring,
+                        hasCeilingLining: props.hasCeilingLining,
+                        hasBackyard: props.hasBackyard,
+                        hasPool: props.hasPool,
+                        hasSolarPanel: props.hasSolarPanel
+                });
 
-                    return Listing.build(
-                        l.title,
-                        l.type,
-                        l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-                        Number(l.basePrice),
-                        l.userId,
-                        l.description,
-                        l.iptu ? Number(l.iptu) : null,
+                    return Listing.assemble({
+                        id: l.id,
+                        title: l.title,
+                        type: l.type,
+                        category: l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+                        basePrice: Number(l.basePrice),
+                        userId: l.userId,
+                        description: l.description,
+                        iptu: l.iptu ? Number(l.iptu) : null,
                         address,
-                        details
-                    );
+                        propertyDetails: details,
+                        createdAt:l.createdAt!,
+                        updatedAt:l.updatedAt
+
+                    });
                 });
 
             return { listings, totalPages };
@@ -262,7 +287,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
         try {
             const props = listing.getProps();
             const addressProps = props.address.getProps();
-            const detailsProps = props.PropertyDetails.getProps();
+            const detailsProps = props.propertyDetails.getProps();
 
             await prisma.$transaction([
             prisma.address.update({

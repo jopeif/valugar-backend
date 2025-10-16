@@ -14,7 +14,7 @@ export type ListingProps = {
     createdAt: Date,
     updatedAt: Date | null,
     address: Address,
-    PropertyDetails: PropertyDetails
+    propertyDetails: PropertyDetails
 }
 
 export class Listing {
@@ -48,7 +48,7 @@ export class Listing {
                 createdAt,
                 updatedAt,
                 address,
-                PropertyDetails: details
+                propertyDetails: details
 
             }
         )

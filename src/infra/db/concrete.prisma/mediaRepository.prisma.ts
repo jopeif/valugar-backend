@@ -44,4 +44,31 @@ export class MediaRepositoryPrisma implements MediaRepository{
             throw error
         }
     }
+
+    async findById(id: string): Promise<Media | null> {
+        try {
+            const media = await prisma.media.findUnique({
+                where:{
+                    id
+                }
+            })
+
+            if(!media){
+                return null
+            }
+
+            const result = Media.assemble({
+                id: media.id,
+                title: media.title,
+                description: media.description,
+                type: media.type,
+                url: media.url,
+                listingId: media.listingId,
+            })
+
+            return result
+        } catch (error) {
+            throw error
+        }
+    }
 }

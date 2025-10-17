@@ -6,7 +6,7 @@ export type ListingProps = {
     id: string,
     title: string,
     description: string | null,
-    type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO"
+    type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" |  "LOJA" | "BOX" | "ARMAZEM" | "SALA" | "PREDIO" | "OUTRO"
     category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
     basePrice: Number,
     iptu: Number | null,
@@ -22,7 +22,7 @@ export class Listing {
 
     static build(
         title: string,
-        type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
+        type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" |  "LOJA" | "BOX" | "ARMAZEM" | "SALA" | "PREDIO" | "OUTRO",
         category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
         basePrice: number,
         userId: string,

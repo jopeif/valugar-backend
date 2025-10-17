@@ -1,4 +1,3 @@
-import { Ref } from "react";
 import { RefreshTokenDTOInput, RefreshTokenDTOOutput } from "../../dto/auth/RefreshTokenDTO";
 import { UseCase } from "../UseCase";
 import { RefreshTokenRepository } from "../../../domain/repositories/refreshToken.repository";

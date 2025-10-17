@@ -14,7 +14,7 @@ export interface ListingRepository {
         minBedrooms?: number,
         maxBedrooms?: number,
         propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-        listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
+        type?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" |  "LOJA" | "BOX" | "ARMAZEM" | "SALA" | "PREDIO" | "OUTRO",
         details?: {
             hasGarage?: boolean;
             isPetFriendly?: boolean;
@@ -24,6 +24,7 @@ export interface ListingRepository {
             hasPool?: boolean;
             hasSolarPanel?: boolean;
         },
+        
     ): Promise<{ listings: Listing[]; totalPages: number }> 
     findByUserId(id: string): Promise<Listing[]|null>
     findByZipCode(zipCode: string): Promise<Listing | null>;

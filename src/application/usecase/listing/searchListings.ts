@@ -7,11 +7,11 @@ export class SearchListingsUseCase implements UseCase<SearchListingDTOInput, Sea
 
     async execute(input: SearchListingDTOInput): Promise<SearchListingsDTOOutput> {
         try {
-            const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details, page, pageSize } = input;
+            const { query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, type, details, page, pageSize } = input;
 
             
             const listings = await this.listingRepo.searchListings(
-                page, pageSize, query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details
+                page, pageSize, query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, type, details
             );
             
             const {totalPages} = listings
@@ -53,6 +53,12 @@ export class SearchListingsUseCase implements UseCase<SearchListingDTOInput, Sea
                         hasBackyard: details.hasBackyard,
                         hasPool: details.hasPool,
                         hasSolarPanel: details.hasSolarPanel,
+                        hasParkingLot: details.hasParkingLot,
+                        isAccessible: details.isAccessible,
+                        hasAirConditioner: details.hasAirConditioner,
+                        hasChildArea: details.hasChildArea,
+                        hasKitchen: details.hasKitchen,
+                        hasWarehouse: details.hasWarehouse,
                     }
                 };
 

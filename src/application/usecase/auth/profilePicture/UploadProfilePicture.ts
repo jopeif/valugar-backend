@@ -15,12 +15,18 @@ async execute(input: UploadProfilePictureDTOInput): Promise<UploadProfilePicture
     const { userId, file } = input;
 
 
-
     const user = await this.userRepo.findById(userId);
-    if (!user) throw new Error("Usuário não encontrado.");
+    if (!user) {
+        throw new Error("Usuário não encontrado.")
+    }
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.mimetype)) {
+            throw new Error(`Tipo de arquivo não permitido: ${file.mimetype}`);
+        }
 
     if(user.getProps().profilePicture){
-        LocalUploader.delete(`./src/infra/storage/profilePictures/${user.getProps().profilePicture?.getProps().url!}`)
+        const url = user.getProps().profilePicture?.getProps().url!.split("/")[1]
+        LocalUploader.delete(String(`./src/infra/storage/profilePictures/${url}`))
         this.userRepo.deleteProfilePicture(user.getProps().profilePicture?.getProps().id!)
     }
 
@@ -34,7 +40,7 @@ async execute(input: UploadProfilePictureDTOInput): Promise<UploadProfilePicture
 
     const savedPath = await LocalUploader.upload(file, config, `src/infra/storage/profilePictures/`);
 
-    const pp = ProfilePicture.build(savedPath, userId);
+    const pp = ProfilePicture.build(`profile-picture/${savedPath}`, userId);
     
     await this.userRepo.saveProfiePicture(pp);
 

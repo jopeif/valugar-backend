@@ -56,6 +56,13 @@ export class FindListingByUserUseCase implements UseCase<FindListingByUserDTOInp
                         hasBackyard: details.hasBackyard,
                         hasPool: details.hasPool,
                         hasSolarPanel: details.hasSolarPanel,
+                        hasParkingLot: details.hasParkingLot,
+                        isAccessible: details.isAccessible,
+                        hasAirConditioner: details.hasAirConditioner,
+                        hasChildArea: details.hasChildArea,
+                        hasKitchen: details.hasKitchen,
+                        hasWarehouse: details.hasWarehouse,
+
                     }
                 };
             });

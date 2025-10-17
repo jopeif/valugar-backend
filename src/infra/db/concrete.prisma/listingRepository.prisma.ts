@@ -47,6 +47,12 @@ export class ListingRepositoryPrisma implements ListingRepository {
                         hasBackyard:l.propertyDetails!.hasBackyard,
                         hasPool:l.propertyDetails!.hasPool,
                         hasSolarPanel:l.propertyDetails!.hasSolarPanel,
+                        hasParkingLot:l.propertyDetails!.hasParkingLot,
+                        isAccessible: l.propertyDetails!.isAccessible,
+                        hasAirConditioner: l.propertyDetails!.hasAirConditioner,
+                        hasChildArea: l.propertyDetails!.hasChildArea,
+                        hasKitchen: l.propertyDetails!.hasKitchen,
+                        hasWarehouse: l.propertyDetails!.hasWarehouse,
                     });
 
                     return Listing.assemble({
@@ -109,6 +115,13 @@ export class ListingRepositoryPrisma implements ListingRepository {
                     hasBackyard: listing.propertyDetails.hasBackyard,
                     hasPool: listing.propertyDetails.hasPool,
                     hasSolarPanel: listing.propertyDetails.hasSolarPanel,
+
+                    hasParkingLot: listing.propertyDetails.hasParkingLot,
+                    isAccessible: listing.propertyDetails.isAccessible,
+                    hasAirConditioner: listing.propertyDetails.hasAirConditioner,
+                    hasChildArea: listing.propertyDetails.hasChildArea,
+                    hasKitchen: listing.propertyDetails.hasKitchen,
+                    hasWarehouse: listing.propertyDetails.hasWarehouse
                 }
             );
 
@@ -138,28 +151,27 @@ export class ListingRepositoryPrisma implements ListingRepository {
     }
 
     async searchListings(
-        page: number = 1,
-        pageSize: number = 10,
-        query?: string,
-        minPrice?: number,
-        maxPrice?: number,
-        minBedrooms?: number,
-        maxBedrooms?: number,
-        propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-        listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
-        details?: {
-            hasGarage?: boolean;
-            isPetFriendly?: boolean;
-            hasCeramicFlooring?: boolean;
-            hasCeilingLining?: boolean;
-            hasBackyard?: boolean;
-            hasPool?: boolean;
-            hasSolarPanel?: boolean;
-        },
-        
+    page: number = 1,
+    pageSize: number = 10,
+    query?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    minBedrooms?: number,
+    maxBedrooms?: number,
+    propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+    type?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "LOJA" | "BOX" | "ARMAZEM" | "SALA" | "PREDIO" | "OUTRO",
+    details?: {
+        hasGarage?: boolean;
+        isPetFriendly?: boolean;
+        hasCeramicFlooring?: boolean;
+        hasCeilingLining?: boolean;
+        hasBackyard?: boolean;
+        hasPool?: boolean;
+        hasSolarPanel?: boolean;
+    },
     ): Promise<{ listings: Listing[]; totalPages: number }> {
-
         try {
+            // Construção do filtro dinâmico
             const where: Prisma.ListingWhereInput = {
                 AND: [
                     query
@@ -183,7 +195,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
                         : undefined,
 
                     propertyCategory ? { category: propertyCategory } : undefined,
-                    listingType ? { type: listingType } : undefined,
+                    type ? { type } : undefined,
 
                     minBedrooms != null || maxBedrooms != null
                         ? {
@@ -206,6 +218,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
                 ].filter(Boolean) as Prisma.ListingWhereInput[],
             };
 
+            // Contagem total e busca paginada
             const [totalCount, listingsRaw] = await Promise.all([
                 prisma.listing.count({ where }),
                 prisma.listing.findMany({
@@ -223,15 +236,14 @@ export class ListingRepositoryPrisma implements ListingRepository {
                 .filter(l => l.address && l.propertyDetails)
                 .map(l => {
                     const address = Address.assemble({
-                        id: l.address?.id!,
+                        id: l.address!.id,
                         zipCode: l.address!.zipCode,
                         state: l.address!.state,
                         city: l.address!.city,
                         neighborhood: l.address!.neighborhood,
                         street: l.address!.street,
-                        reference: l.address!.reference
-                        }
-                    );
+                        reference: l.address!.reference,
+                    });
 
                     const props = l.propertyDetails!;
                     const details = PropertyDetails.assemble({
@@ -240,14 +252,20 @@ export class ListingRepositoryPrisma implements ListingRepository {
                         bedrooms: props.bedrooms ?? 0,
                         bathrooms: props.bathrooms ?? 0,
                         doesntPayWaterBill: props.doesntPayWaterBill,
-                        hasGarage:props.hasGarage,
+                        hasGarage: props.hasGarage,
                         isPetFriendly: props.isPetFriendly,
                         hasCeramicFlooring: props.hasCeramicFlooring,
                         hasCeilingLining: props.hasCeilingLining,
                         hasBackyard: props.hasBackyard,
                         hasPool: props.hasPool,
-                        hasSolarPanel: props.hasSolarPanel
-                });
+                        hasSolarPanel: props.hasSolarPanel,
+                        hasParkingLot: props.hasParkingLot,
+                        isAccessible: props.isAccessible,
+                        hasAirConditioner: props.hasAirConditioner,
+                        hasChildArea: props.hasChildArea,
+                        hasKitchen: props.hasKitchen,
+                        hasWarehouse: props.hasWarehouse,
+                    });
 
                     return Listing.assemble({
                         id: l.id,
@@ -260,9 +278,8 @@ export class ListingRepositoryPrisma implements ListingRepository {
                         iptu: l.iptu ? Number(l.iptu) : null,
                         address,
                         propertyDetails: details,
-                        createdAt:l.createdAt!,
-                        updatedAt:l.updatedAt
-
+                        createdAt: l.createdAt!,
+                        updatedAt: l.updatedAt,
                     });
                 });
 
@@ -273,152 +290,153 @@ export class ListingRepositoryPrisma implements ListingRepository {
             throw error;
         }
     }
-    
 
-    asyncfindByZipCode(zipCode: string): Promise<Listing | null> {
-        throw new Error("Method not implemented.");
-    }
-
-    findAll(): Promise<Listing[]> {
-        throw new Error("Method not implemented.");
-    }
-
-    async update(listing: Listing): Promise<boolean> {
-        try {
-            const props = listing.getProps();
-            const addressProps = props.address.getProps();
-            const detailsProps = props.propertyDetails.getProps();
-
-            await prisma.$transaction([
-            prisma.address.update({
-                where: { id: addressProps.id },
-                data: {
-                zipCode: addressProps.zipCode,
-                state: addressProps.state,
-                city: addressProps.city,
-                neighborhood: addressProps.neighborhood,
-                street: addressProps.street,
-                reference: addressProps.reference ?? null,
-                },
-            }),
-            prisma.propertyDetail.update({
-                where: { id: detailsProps.id },
-                data: {
-                area: detailsProps.area,
-                bedrooms: detailsProps.bedrooms,
-                bathrooms: detailsProps.bathrooms,
-                doesntPayWaterBill: detailsProps.doesntPayWaterBill,
-                hasGarage: detailsProps.hasGarage,
-                isPetFriendly: detailsProps.isPetFriendly,
-                hasCeramicFlooring: detailsProps.hasCeramicFlooring,
-                hasCeilingLining: detailsProps.hasCeilingLining,
-                hasBackyard: detailsProps.hasBackyard,
-                hasPool: detailsProps.hasPool,
-                hasSolarPanel: detailsProps.hasSolarPanel,
-                },
-            }),
-            prisma.listing.update({
-                where: { id: props.id },
-                data: {
-                title: props.title,
-                description: props.description,
-                type: props.type,
-                category: props.category,
-                basePrice: Number(props.basePrice),
-                iptu: props.iptu ? Number(props.iptu) : null,
-                userId: props.userId,
-                updatedAt: new Date(),
-                },
-            }),
-            ]);
-
-            return true;
-        } catch (error) {
-            console.error("Erro ao atualizar anúncio no ListingRepositoryPrisma:", error);
-            throw error;
-        }
-    }
-
-    async delete(id: string): Promise<boolean> {
-        try {
-            await prisma.listing.delete({
-                where:{id}
-            })
-            return true;
-            }catch (error) {
-            console.log("Erro ao deletar listing no ListingRepositoryPrisma:", error);
-            throw error;
-        }
-    }
-
-    async save(listing: Listing, address: Address, details: PropertyDetails): Promise<string> {
-        try {
-            const listingProps = listing.getProps();
-            const addressProps = address.getProps();
-            const detailsProps = details.getProps();
-
-            
-
-            await prisma.$transaction(async (tx) => {
-                
-                const detailsRecord = await tx.propertyDetail.create({
-                    data: {
-                        id: detailsProps.id,
-                        area: detailsProps.area,
-                        bedrooms: detailsProps.bedrooms,
-                        bathrooms: detailsProps.bathrooms,
-                        doesntPayWaterBill: detailsProps.doesntPayWaterBill,
-                        hasGarage: detailsProps.hasGarage,
-                        isPetFriendly: detailsProps.isPetFriendly,
-                        hasCeramicFlooring: detailsProps.hasCeramicFlooring,
-                        hasCeilingLining: detailsProps.hasCeilingLining,
-                        hasBackyard: detailsProps.hasBackyard,
-                        hasPool: detailsProps.hasPool,
-                        hasSolarPanel: detailsProps.hasSolarPanel,
-
-                        
-                    }
-                });
-                
-                const addressRecord = await tx.address.create({
-                    data: {
-                        id: addressProps.id,
-                        zipCode: addressProps.zipCode,
-                        state: addressProps.state,
-                        city: addressProps.city,
-                        neighborhood: addressProps.neighborhood,
-                        street: addressProps.street,
-                        reference: addressProps.reference
-                    }
-                })
-
-                const listingRecord = await tx.listing.create({
-                    data: {
-                        id: listingProps.id,
-                        title: listingProps.title,
-                        description: listingProps.description,
-                        type: listingProps.type,
-                        category: listingProps.category as 'RESIDENTIAL' | 'COMMERCIAL' | 'MIXED_USE',
-                        basePrice: listingProps.basePrice as number,
-                        iptu: listingProps.iptu as number,
-                        user: {
-                            connect: { id: listingProps.userId }
-                        },
-                        address: {
-                            connect: { id: addressProps.id }
-                        },
-                        propertyDetails: {
-                            connect: { id: detailsProps.id }
-                        }
-                    }
-                });
-            }
-        )
         
-        return listingProps.id;
-    } catch (error) {
-        console.error("Erro ao salvar listing no ListingRepositoryPrisma:", error);
-        throw error;
-    }
-}       
+
+        asyncfindByZipCode(zipCode: string): Promise<Listing | null> {
+            throw new Error("Method not implemented.");
+        }
+
+        findAll(): Promise<Listing[]> {
+            throw new Error("Method not implemented.");
+        }
+
+        async update(listing: Listing): Promise<boolean> {
+            try {
+                const props = listing.getProps();
+                const addressProps = props.address.getProps();
+                const detailsProps = props.propertyDetails.getProps();
+
+                await prisma.$transaction([
+                prisma.address.update({
+                    where: { id: addressProps.id },
+                    data: {
+                    zipCode: addressProps.zipCode,
+                    state: addressProps.state,
+                    city: addressProps.city,
+                    neighborhood: addressProps.neighborhood,
+                    street: addressProps.street,
+                    reference: addressProps.reference ?? null,
+                    },
+                }),
+                prisma.propertyDetail.update({
+                    where: { id: detailsProps.id },
+                    data: {
+                    area: detailsProps.area,
+                    bedrooms: detailsProps.bedrooms,
+                    bathrooms: detailsProps.bathrooms,
+                    doesntPayWaterBill: detailsProps.doesntPayWaterBill,
+                    hasGarage: detailsProps.hasGarage,
+                    isPetFriendly: detailsProps.isPetFriendly,
+                    hasCeramicFlooring: detailsProps.hasCeramicFlooring,
+                    hasCeilingLining: detailsProps.hasCeilingLining,
+                    hasBackyard: detailsProps.hasBackyard,
+                    hasPool: detailsProps.hasPool,
+                    hasSolarPanel: detailsProps.hasSolarPanel,
+                    },
+                }),
+                prisma.listing.update({
+                    where: { id: props.id },
+                    data: {
+                    title: props.title,
+                    description: props.description,
+                    type: props.type,
+                    category: props.category,
+                    basePrice: Number(props.basePrice),
+                    iptu: props.iptu ? Number(props.iptu) : null,
+                    userId: props.userId,
+                    updatedAt: new Date(),
+                    },
+                }),
+                ]);
+
+                return true;
+            } catch (error) {
+                console.error("Erro ao atualizar anúncio no ListingRepositoryPrisma:", error);
+                throw error;
+            }
+        }
+
+        async delete(id: string): Promise<boolean> {
+            try {
+                await prisma.listing.delete({
+                    where:{id}
+                })
+                return true;
+                }catch (error) {
+                console.log("Erro ao deletar listing no ListingRepositoryPrisma:", error);
+                throw error;
+            }
+        }
+
+        async save(listing: Listing, address: Address, details: PropertyDetails): Promise<string> {
+            try {
+                const listingProps = listing.getProps();
+                const addressProps = address.getProps();
+                const detailsProps = details.getProps();
+
+                
+
+                await prisma.$transaction(async (tx) => {
+                    
+                    const detailsRecord = await tx.propertyDetail.create({
+                        data: {
+                            id: detailsProps.id,
+                            area: detailsProps.area,
+                            bedrooms: detailsProps.bedrooms,
+                            bathrooms: detailsProps.bathrooms,
+                            doesntPayWaterBill: detailsProps.doesntPayWaterBill,
+                            hasGarage: detailsProps.hasGarage,
+                            isPetFriendly: detailsProps.isPetFriendly,
+                            hasCeramicFlooring: detailsProps.hasCeramicFlooring,
+                            hasCeilingLining: detailsProps.hasCeilingLining,
+                            hasBackyard: detailsProps.hasBackyard,
+                            hasPool: detailsProps.hasPool,
+                            hasSolarPanel: detailsProps.hasSolarPanel,
+
+                            
+                        }
+                    });
+                    
+                    const addressRecord = await tx.address.create({
+                        data: {
+                            id: addressProps.id,
+                            zipCode: addressProps.zipCode,
+                            state: addressProps.state,
+                            city: addressProps.city,
+                            neighborhood: addressProps.neighborhood,
+                            street: addressProps.street,
+                            reference: addressProps.reference
+                        }
+                    })
+
+                    const listingRecord = await tx.listing.create({
+                        data: {
+                            id: listingProps.id,
+                            title: listingProps.title,
+                            description: listingProps.description,
+                            type: listingProps.type,
+                            category: listingProps.category as 'RESIDENTIAL' | 'COMMERCIAL' | 'MIXED_USE',
+                            basePrice: listingProps.basePrice as number,
+                            iptu: listingProps.iptu as number,
+                            user: {
+                                connect: { id: listingProps.userId }
+                            },
+                            address: {
+                                connect: { id: addressProps.id }
+                            },
+                            propertyDetails: {
+                                connect: { id: detailsProps.id }
+                            }
+                        }
+                    });
+                }
+            )
+            
+            return listingProps.id;
+        } catch (error) {
+            console.error("Erro ao salvar listing no ListingRepositoryPrisma:", error);
+            throw error;
+        }
+    }       
 }

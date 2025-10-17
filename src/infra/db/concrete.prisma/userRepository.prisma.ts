@@ -74,6 +74,7 @@ export class UserRepositoryPrisma implements UserRepository{
                 
             });
 
+
             if (!user) {
                 return null;
             }

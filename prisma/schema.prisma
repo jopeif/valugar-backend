@@ -57,6 +57,16 @@ model PropertyDetail {
   hasPool Boolean @default(false)
   hasSolarPanel Boolean @default(false)
 
+  hasParkingLot Boolean @default(false)
+  isAccessible  Boolean @default(false)
+  hasAirConditioner Boolean @default(false)
+  hasChildArea Boolean @default(false)
+  hasKitchen Boolean @default(false)
+  hasWarehouse Boolean @default(false)
+
+
+
+
 
   listing   Listing?
 
@@ -128,6 +138,12 @@ enum ListingType {
   KITNET
   QUARTO
   SITIO
+  
+  LOJA
+  BOX
+  ARMAZEM
+  SALA
+  PREDIO 
   OUTRO
 }
 

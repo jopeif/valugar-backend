@@ -6,7 +6,7 @@
     "dev": "tsx watch src/server.ts",
     "test": "jest",
     "seed": "npx ts-node ./src/scripts/seed.ts",
-    "cleanup":"npx ts-node ./src/scripts/cleanupMedia.ts"
+    "cleanup": "npx ts-node ./src/scripts/cleanupMedia.ts"
   },
   "keywords": [],
   "author": "",

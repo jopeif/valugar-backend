@@ -14,17 +14,16 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: ["*"], 
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-}));
+  origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
 const listingsStoragePath = path.resolve(__dirname, '..', 'src', 'infra', 'storage', 'listings');
 const profilePictureStoragePath = path.resolve(__dirname, '..', 'src', 'infra', 'storage', 'profilePictures')
 
 app.use('/media/', express.static(listingsStoragePath));
-app.use('/profile-picture', express.static(profilePictureStoragePath))
+app.use('/profile-picture/', express.static(profilePictureStoragePath))
 app.use('/auth/', AuthRouter);
 app.use('/listing/', ListingRouter)
 

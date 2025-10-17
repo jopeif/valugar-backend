@@ -7,15 +7,21 @@ export type SearchListingDTOInput = {
     minBedrooms?: number,
     maxBedrooms?: number,
     propertyCategory?: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-    listingType?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
+    type?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" |  "LOJA" | "BOX" | "ARMAZEM" | "SALA" | "PREDIO" | "OUTRO",
     details?: {
-        hasGarage?: boolean;
-        isPetFriendly?: boolean;
-        hasCeramicFlooring?: boolean;
-        hasCeilingLining?: boolean;
-        hasBackyard?: boolean;
-        hasPool?: boolean;
-        hasSolarPanel?: boolean;
+        hasGarage?: boolean,
+        isPetFriendly?: boolean,
+        hasCeramicFlooring?: boolean,
+        hasCeilingLining?: boolean,
+        hasBackyard?: boolean,
+        hasPool?: boolean,
+        hasSolarPanel?: boolean,
+        hasParkingLot?: boolean,
+        isAccessible?: boolean,
+        hasAirConditioner?: boolean,
+        hasChildArea?: boolean,
+        hasKitchen?: boolean,
+        hasWarehouse?: boolean,
     }
 }
 
@@ -25,7 +31,7 @@ export type SearchListingsDTOOutput = {
             id: string,
             title: string,
             description: string | null,
-            type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" | "OUTRO",
+            type?: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" |  "LOJA" | "BOX" | "ARMAZEM" | "SALA" | "PREDIO" | "OUTRO",
             category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
             basePrice: Number,
             iptu: Number | null,
@@ -51,7 +57,13 @@ export type SearchListingsDTOOutput = {
                 hasBackyard: boolean,
                 hasPool: boolean,
                 hasSolarPanel: boolean,
-                
+                hasParkingLot?: boolean,
+                isAccessible?: boolean,
+                hasAirConditioner?: boolean,
+                hasChildArea?: boolean,
+                hasKitchen?: boolean,
+                hasWarehouse?: boolean,
+                        
             }
         }[],
         totalPages:number

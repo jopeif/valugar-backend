@@ -13,6 +13,11 @@ export class CreateListingUseCase implements UseCase<createListingDTOInput, crea
         try {
             const { title, description, type, category, basePrice, iptu, userId, address, details } = input;
 
+            if(category=="COMMERCIAL" && ["CASA", "APARTAMENTO", "KITNET", "QUARTO", "SITIO"].includes(type)
+            || category=="RESIDENTIAL" && ["LOJA", "BOX", "ARMAZEM", "SALA", "PREDIO"].includes(type)
+            ){ 
+                throw new Error("Tipo do imóvel não condiz com a categoria")
+            }
 
             const detailsInstance = PropertyDetails.build(
                 details.area,
@@ -26,7 +31,13 @@ export class CreateListingUseCase implements UseCase<createListingDTOInput, crea
                 details.hasCeilingLining,
                 details.hasBackyard,
                 details.hasPool,
-                details.hasSolarPanel
+                details.hasSolarPanel,
+                details.hasParkingLot,
+                details.isAccessible,
+                details.hasAirConditioner,
+                details.hasChildArea,
+                details.hasKitchen,
+                details.hasWarehouse,
             );
 
             const addressInstance = Address.build(

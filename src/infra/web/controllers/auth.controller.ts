@@ -161,11 +161,13 @@ export class AuthController {
             
             
             if(!userId){
-                return res.status(400).json({error: "User ID is required"})
+                res.status(400).json({error: "User ID is required"})
+                return
             }
 
             if(files.length!=1){
-                return res.status(400).json({error: "You must send exactly one profile picture is accepted."})
+                res.status(400).json({error: "You must send exactly one profile picture is accepted."})
+                return
             }
 
             const file = files[0]!

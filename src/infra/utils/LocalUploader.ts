@@ -39,8 +39,9 @@ export class LocalUploader {
 
     static async delete(filePath: string): Promise<void> {
         try {
-            const resolvedPath = path.resolve(filePath);
+            let resolvedPath = path.resolve(filePath);
             const fileExists = await fs.access(resolvedPath).then(() => true).catch(() => false);
+
 
             if (!fileExists) {
                 throw new Error(`Arquivo não encontrado: ${resolvedPath}`);

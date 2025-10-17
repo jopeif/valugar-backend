@@ -13,6 +13,13 @@ export type PropertyDetailsProps = {
     hasPool: boolean,
     hasSolarPanel: boolean,
 
+    hasParkingLot: boolean,
+    isAccessible: boolean,
+    hasAirConditioner: boolean,
+    hasChildArea: boolean,
+    hasKitchen: boolean,
+    hasWarehouse: boolean,
+
 }
 
 export class PropertyDetails {
@@ -30,6 +37,12 @@ export class PropertyDetails {
         hasBackyard?: boolean | null,
         hasPool?: boolean | null,
         hasSolarPanel?: boolean | null,
+        hasParkingLot?: boolean,
+        isAccessible?: boolean,
+        hasAirConditioner?: boolean,
+        hasChildArea?: boolean,
+        hasKitchen?: boolean,
+        hasWarehouse?: boolean,
     ): PropertyDetails {
         const props: PropertyDetailsProps = {
             id: crypto.randomUUID(),
@@ -43,7 +56,13 @@ export class PropertyDetails {
             hasCeilingLining: hasCeilingLining ?? false,
             hasBackyard: hasBackyard ?? false,
             hasPool: hasPool ?? false,
-            hasSolarPanel: hasSolarPanel ?? false
+            hasSolarPanel: hasSolarPanel ?? false,
+            hasParkingLot: hasParkingLot ?? false, 
+            isAccessible: isAccessible ?? false,
+            hasAirConditioner: hasAirConditioner ?? false,
+            hasChildArea: hasChildArea ?? false,
+            hasKitchen: hasKitchen ?? false,
+            hasWarehouse: hasWarehouse ?? false
             
         }
         return new PropertyDetails(props)

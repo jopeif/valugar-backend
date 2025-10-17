@@ -104,8 +104,10 @@ router.get("/find/:id", (req, res) => {container.listingController.findById(req,
  *             schema:
  *               $ref: '#/components/schemas/UpdateListingDTOOutput'
  */
-router.patch("/update/:id", (req, res) => {
-  container.listingController.update(req, res);
+router.patch("/update/:id", 
+  authMiddleware,
+  (req, res) => { 
+    container.listingController.update(req, res);
 });
 
 

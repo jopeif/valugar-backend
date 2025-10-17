@@ -19,6 +19,12 @@ async execute(input: UploadProfilePictureDTOInput): Promise<UploadProfilePicture
     const user = await this.userRepo.findById(userId);
     if (!user) throw new Error("Usuário não encontrado.");
 
+    if(user.getProps().profilePicture){
+        LocalUploader.delete(`./src/infra/storage/profilePictures/${user.getProps().profilePicture?.getProps().url!}`)
+        this.userRepo.deleteProfilePicture(user.getProps().profilePicture?.getProps().id!)
+    }
+
+
     const config: UploadConfig = {
         allowedTypes: ["image/jpeg", "image/png", "image/webp"],
         maxSizeMB: 100,

@@ -4,6 +4,14 @@ import { UserRepository } from "../../../domain/repositories/User.repository";
 import { ProfilePicture } from "../../../domain/entities/ProfilePicture";
 
 export class UserRepositoryPrisma implements UserRepository{
+    async deleteProfilePicture(id: string): Promise<boolean> {
+        try {  
+            await prisma.profilePicture.delete({where:{id}})
+            return true
+        } catch (error) {
+            throw error
+        }
+    }
     async saveProfiePicture(profilePicture: ProfilePicture): Promise<string> {
         try {
 

@@ -12,4 +12,5 @@ export interface UserRepository {
     delete(id: string): Promise<boolean>;
     verifyEmail(id: string): Promise<boolean>;
     saveProfiePicture(profilePicture: ProfilePicture): Promise<string>
+    deleteProfilePicture(id: string): Promise<boolean>
 }

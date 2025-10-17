@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { ContainerFactory } from "../../../di/containerFactory";
 import { adminMiddleware } from "../middlewares/adminMiddleware";
+import { uploadMiddleware } from "../middlewares/uploadMiddleware";
 
 const router = Router();
 const container = ContainerFactory.getContainer();
@@ -230,7 +231,10 @@ router.get("/user/email/:email", (req, res) => container.authController.findUser
 router.get("/verify-email/", (req, res) => container.authController.verificateEmail(req, res));
 
 
-
+router.post(
+    "/profile-picture/:userId", 
+    uploadMiddleware,
+    (req, res)=> container.authController.uploadProfilePicture(req, res))
 
 
 

@@ -11,7 +11,7 @@ export class FindAllUsersUseCase implements UseCase<void, FindAllUsersOutput> {
 
             const users = usersRaw.map(user => {
                 const props = user.getProps();
-                return {
+                const output = {
                     id: props.id,
                     email: props.email,
                     name: props.name,
@@ -20,8 +20,15 @@ export class FindAllUsersUseCase implements UseCase<void, FindAllUsersOutput> {
                     createdAt: props.createdAt,
                     lastLogin: props.lastLogin,
                     isBlocked: props.isBlocked,
-                    isMailVerified: props.isMailVerified
+                    isMailVerified: props.isMailVerified,
+                    ...(props.profilePicture && {
+                        profilePicture: {
+                        id: props.profilePicture.getProps().id,
+                        url: props.profilePicture.getProps().url
+                        }
+                    })
                 };
+            return output;
             });
 
             return users;

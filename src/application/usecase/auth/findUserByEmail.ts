@@ -14,7 +14,7 @@ export class FindUserByEmailUseCase implements UseCase<FindUserByEmailInput, Fin
                 throw new Error("User not found");
             }
             const props = user.getProps();
-            return {
+            const output = {
                 id: props.id,
                 email: props.email,
                 name: props.name,
@@ -23,8 +23,15 @@ export class FindUserByEmailUseCase implements UseCase<FindUserByEmailInput, Fin
                 createdAt: props.createdAt,
                 lastLogin: props.lastLogin,
                 isBlocked: props.isBlocked,
-                isMailVerified: props.isMailVerified
-            };
+                isMailVerified: props.isMailVerified,
+                ...(props.profilePicture && {
+                    profilePicture: {
+                    id: props.profilePicture.getProps().id,
+                    url: props.profilePicture.getProps().url
+                    }
+                })
+                };
+            return output;
         } catch (error) {
             console.error("Erro no findUserByEmailUseCase:", error);
             throw error;

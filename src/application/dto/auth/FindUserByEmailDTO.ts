@@ -12,4 +12,8 @@ export type FindUserByEmailOutput = {
     lastLogin?: Date | undefined;
     isBlocked: boolean;
     isMailVerified: boolean | undefined;
+    profilePicture?: {
+        id: string,
+        url: string
+    }
 }

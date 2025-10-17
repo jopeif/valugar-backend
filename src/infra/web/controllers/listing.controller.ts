@@ -1,4 +1,5 @@
-import { UploadMediaUseCase } from '../../../application/usecase/media.ts/UploadListingMedia';
+import { FindMediaByListingIdUseCase } from './../../../application/usecase/listing/media/findMediaByListing';
+import { UploadMediaUseCase } from '../../../application/usecase/listing/media/UploadListingMedia';
 import { CreateListingUseCase } from "../../../application/usecase/listing/createListing";
 import { Request, Response } from "express";
 import { DeleteListingUseCase } from "../../../application/usecase/listing/deleteListing";
@@ -6,7 +7,6 @@ import { FindListingByIdUseCase } from "../../../application/usecase/listing/fin
 import { UpdateListingUseCase } from "../../../application/usecase/listing/updateListing";
 import { SearchListingsUseCase } from "../../../application/usecase/listing/searchListings";
 import { FindListingByUserUseCase } from "../../../application/usecase/listing/findListingByUser";
-import { FindMediaByListingIdUseCase } from '../../../application/usecase/media.ts/findMediaByListing';
 import multer from 'multer';
 
     

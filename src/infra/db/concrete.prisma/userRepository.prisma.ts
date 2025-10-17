@@ -1,8 +1,28 @@
 import { prisma } from "../prisma";
 import { User } from "../../../domain/entities/User";
 import { UserRepository } from "../../../domain/repositories/User.repository";
+import { ProfilePicture } from "../../../domain/entities/ProfilePicture";
 
 export class UserRepositoryPrisma implements UserRepository{
+    async saveProfiePicture(profilePicture: ProfilePicture): Promise<string> {
+        try {
+
+            const {id, url, userId} = profilePicture.getProps()
+            await prisma.profilePicture.create({
+                data:{
+                    id, 
+                    url,
+                    user: {
+                            connect: { id: userId }
+                        }
+                }
+            })
+
+            return id
+        } catch (error) {
+            throw error
+        }
+    }
 
     async save(user: User): Promise<string> {
         try {
@@ -38,29 +58,51 @@ export class UserRepositoryPrisma implements UserRepository{
         }
     }
 
-   async findById(id: string): Promise<User | null> {
-    try {
-        const user = await prisma.user.findUnique({
-            where: { id },
-            include: { role: true } // pega também a role
-        });
+    async findById(id: string): Promise<User | null> {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id },
+                include: { role: true, profilePicture: true },
+                
+            });
 
-        if (!user) {
-            return null;
-        }
+            if (!user) {
+                return null;
+            }
+            
+            
 
-        return User.assemble({
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            password: user.password,
-            role: user.role.name as 'admin' | 'user', // agora vem o nome
-            phone: user.phone ?? undefined,
-            isBlocked: user.isBlocked,
-            createdAt: user.createdAt,
-            lastLogin: user.lastLogin ?? undefined,
-            isMailVerified: user.isMailVerified,
-        });
+            if(user.profilePicture){
+                const profilePicture = ProfilePicture.assemble({id: user.profilePicture.id, url:user.profilePicture.url, userId:user.profilePicture.userId})
+            
+
+                return User.assemble({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    password: user.password,
+                    role: user.role.name as 'admin' | 'user', 
+                    phone: user.phone ?? undefined,
+                    isBlocked: user.isBlocked,
+                    createdAt: user.createdAt,
+                    lastLogin: user.lastLogin ?? undefined,
+                    isMailVerified: user.isMailVerified,
+                    profilePicture
+                });
+            }
+                return User.assemble({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    password: user.password,
+                    role: user.role.name as 'admin' | 'user', 
+                    phone: user.phone ?? undefined,
+                    isBlocked: user.isBlocked,
+                    createdAt: user.createdAt,
+                    lastLogin: user.lastLogin ?? undefined,
+                    isMailVerified: user.isMailVerified,
+                });
+
         } catch (error) {
             console.error("Erro ao buscar usuário por ID no UserRepositoryPrisma:", error);
             throw error;
@@ -71,25 +113,43 @@ export class UserRepositoryPrisma implements UserRepository{
         try {
             const user = await prisma.user.findUnique({
                 where: { email },
-                include: { role: true }
+                include: { role: true, profilePicture: true }
             });
 
             if (!user) {
                 return null;
             }
 
-            return User.assemble({
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                password: user.password,
-                role: user.role.name as 'admin' | 'user',
-                phone: user.phone ?? undefined,
-                isBlocked: user.isBlocked,
-                createdAt: user.createdAt,
-                lastLogin: user.lastLogin ?? undefined,
-                isMailVerified: user.isMailVerified,
-            });
+            if(user.profilePicture){
+                const profilePicture = ProfilePicture.assemble({id: user.profilePicture.id, url:user.profilePicture.url, userId:user.profilePicture.userId})
+            
+
+                return User.assemble({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    password: user.password,
+                    role: user.role.name as 'admin' | 'user', 
+                    phone: user.phone ?? undefined,
+                    isBlocked: user.isBlocked,
+                    createdAt: user.createdAt,
+                    lastLogin: user.lastLogin ?? undefined,
+                    isMailVerified: user.isMailVerified,
+                    profilePicture
+                });
+            }
+                return User.assemble({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    password: user.password,
+                    role: user.role.name as 'admin' | 'user', 
+                    phone: user.phone ?? undefined,
+                    isBlocked: user.isBlocked,
+                    createdAt: user.createdAt,
+                    lastLogin: user.lastLogin ?? undefined,
+                    isMailVerified: user.isMailVerified,
+                });
         } catch (error) {
             console.error("Erro ao buscar usuário por email no UserRepositoryPrisma:", error);
             throw error;
@@ -99,22 +159,40 @@ export class UserRepositoryPrisma implements UserRepository{
     async findAll(): Promise<User[]> {
         try {
             const users = await prisma.user.findMany({
-                include: { role: true }
+                include: { role: true, profilePicture: true }
             });
 
-            const assembledUsers = await Promise.all(users.map(user =>
-                User.assemble({
+            const assembledUsers = await Promise.all(users.map(user =>{
+                if(user.profilePicture){
+                const profilePicture = ProfilePicture.assemble({id: user.profilePicture.id, url:user.profilePicture.url, userId:user.profilePicture.userId})
+            
+
+                return User.assemble({
                     id: user.id,
                     email: user.email,
                     name: user.name,
                     password: user.password,
-                    role: user.role.name as 'admin' | 'user',
+                    role: user.role.name as 'admin' | 'user', 
                     phone: user.phone ?? undefined,
                     isBlocked: user.isBlocked,
                     createdAt: user.createdAt,
                     lastLogin: user.lastLogin ?? undefined,
                     isMailVerified: user.isMailVerified,
-                })
+                    profilePicture
+                });
+            }
+                return User.assemble({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    password: user.password,
+                    role: user.role.name as 'admin' | 'user', 
+                    phone: user.phone ?? undefined,
+                    isBlocked: user.isBlocked,
+                    createdAt: user.createdAt,
+                    lastLogin: user.lastLogin ?? undefined,
+                    isMailVerified: user.isMailVerified,
+                });}
             ));
 
             return assembledUsers;
@@ -186,20 +264,43 @@ export class UserRepositoryPrisma implements UserRepository{
         try {
             const user = await prisma.user.findFirst({
                 where: { mailVerificationToken: token },
-                include: { role: true }
+                include: { role: true, profilePicture: true }
             });
-            return User.assemble({
-                id: user?.id ?? '',
-                email: user?.email ?? '',
-                name: user?.name ?? '',
-                password: user?.password ?? '',
-                role: user?.role.name  as 'admin' | 'user',
-                phone: user?.phone ?? undefined,
-                isBlocked: user?.isBlocked ?? false,
-                createdAt: user?.createdAt ?? new Date(),
-                lastLogin: user?.lastLogin ?? undefined,
-                isMailVerified: user?.isMailVerified ?? false
-            });
+
+            if(!user){
+                return null
+            }
+
+            if(user.profilePicture){
+                const profilePicture = ProfilePicture.assemble({id: user.profilePicture.id, url:user.profilePicture.url, userId:user.profilePicture.userId})
+            
+
+                return User.assemble({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    password: user.password,
+                    role: user.role.name as 'admin' | 'user', 
+                    phone: user.phone ?? undefined,
+                    isBlocked: user.isBlocked,
+                    createdAt: user.createdAt,
+                    lastLogin: user.lastLogin ?? undefined,
+                    isMailVerified: user.isMailVerified,
+                    profilePicture
+                });
+            }
+                return User.assemble({
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    password: user.password,
+                    role: user.role.name as 'admin' | 'user', 
+                    phone: user.phone ?? undefined,
+                    isBlocked: user.isBlocked,
+                    createdAt: user.createdAt,
+                    lastLogin: user.lastLogin ?? undefined,
+                    isMailVerified: user.isMailVerified,
+                });
         } catch (error) {
             console.error("Erro ao buscar usuário por token de verificação de email no UserRepositoryPrisma:", error);
             throw error;

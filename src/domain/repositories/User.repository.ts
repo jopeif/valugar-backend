@@ -1,3 +1,4 @@
+import { ProfilePicture } from "../entities/ProfilePicture";
 import { User } from "../entities/User";
 
 export interface UserRepository {
@@ -9,5 +10,6 @@ export interface UserRepository {
     updateLastLogin(id: string, date: Date): Promise<void>;
     update(user: User): Promise<boolean>;
     delete(id: string): Promise<boolean>;
-    verifyEmail(id: string): Promise<boolean>
+    verifyEmail(id: string): Promise<boolean>;
+    saveProfiePicture(profilePicture: ProfilePicture): Promise<string>
 }

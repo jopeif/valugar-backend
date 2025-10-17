@@ -101,11 +101,19 @@ model User {
   mailVerificationToken String?
   roleId    String   @db.Uuid @map("role_id")
 
-  role      Role     @relation(fields: [roleId], references: [id], onUpdate: NoAction, map: "fk_user_role")
+  role           Role     @relation(fields: [roleId], references: [id], onUpdate: NoAction, map: "fk_user_role")
+  profilePicture ProfilePicture? @relation("UserProfilePicture")
   listings       Listing[]
   refreshTokens  RefreshToken[]
-
 }
+
+model ProfilePicture {
+  id          String @id @db.Uuid
+  url         String
+  userId      String @unique @db.Uuid
+  user        User   @relation("UserProfilePicture", fields: [userId], references: [id], onDelete: Cascade)
+}
+
 
 model Role {
   id   String   @id @db.Uuid

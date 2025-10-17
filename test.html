@@ -143,13 +143,13 @@
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
-      formData.append('listingId', listingId);
+      formData.append('userId', listingId);
       for (const file of files) {
         formData.append('file', file);
       }
 
       try {
-        const res = await fetch(`http://localhost:3000/listing/media/${listingId}`, {
+        const res = await fetch(`http://localhost:3000/auth/profile-picture/${listingId}`, {
           method: 'POST',
           body: formData
         });

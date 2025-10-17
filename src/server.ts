@@ -21,8 +21,10 @@ app.use(cors({
 }));
 
 const listingsStoragePath = path.resolve(__dirname, '..', 'src', 'infra', 'storage', 'listings');
+const profilePictureStoragePath = path.resolve(__dirname, '..', 'src', 'infra', 'storage', 'profilePictures')
 
 app.use('/media/', express.static(listingsStoragePath));
+app.use('/profile-picture', express.static(profilePictureStoragePath))
 app.use('/auth/', AuthRouter);
 app.use('/listing/', ListingRouter)
 

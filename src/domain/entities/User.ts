@@ -2,6 +2,7 @@ import { hash } from "bcrypt";
 import validator from "validator"; 
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import { ProfilePicture } from "./ProfilePicture";
 
 export type UserProps = {
     id: string;
@@ -15,6 +16,7 @@ export type UserProps = {
     isBlocked: boolean;
     isMailVerified?: boolean;
     mailVerificationToken?: string | undefined;
+    profilePicture?: ProfilePicture
 };
 
 export class User {

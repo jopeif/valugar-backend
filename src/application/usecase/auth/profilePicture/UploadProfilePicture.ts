@@ -1,0 +1,39 @@
+import { Media } from "../../../../domain/entities/Media";
+import { MediaRepository } from "../../../../domain/repositories/Media.repository";
+import { UseCase } from "../../UseCase";
+import { LocalUploader } from "../../../../infra/utils/LocalUploader";
+import { UploadConfig } from "../../../../infra/utils/UploadConfig";
+import { UploadProfilePictureDTOInput, UploadProfilePictureDTOOutput } from "../../../dto/auth/profilePicture/UploadProfilePictureDTO";
+import { UserRepository } from "../../../../domain/repositories/User.repository";
+import { ProfilePicture } from "../../../../domain/entities/ProfilePicture";
+
+export class UploadProfilePictureUseCase implements UseCase<UploadProfilePictureDTOInput, UploadProfilePictureDTOOutput> {
+    constructor(private readonly userRepo: UserRepository) {}
+
+
+async execute(input: UploadProfilePictureDTOInput): Promise<UploadProfilePictureDTOOutput> {
+    const { userId, file } = input;
+
+
+
+    const user = await this.userRepo.findById(userId);
+    if (!user) throw new Error("Usuário não encontrado.");
+
+    const config: UploadConfig = {
+        allowedTypes: ["image/jpeg", "image/png", "image/webp"],
+        maxSizeMB: 100,
+        maxFiles: 1,
+    };
+
+
+    const savedPath = await LocalUploader.upload(file, config, `src/infra/storage/profilePictures/`);
+
+    const pp = ProfilePicture.build(savedPath, userId);
+    
+    await this.userRepo.saveProfiePicture(pp);
+
+
+
+    return { media: savedPath };
+}
+}

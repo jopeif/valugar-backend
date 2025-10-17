@@ -1,10 +1,10 @@
-import { Media } from "../../../domain/entities/Media";
-import { MediaRepository } from "../../../domain/repositories/Media.repository";
-import { UseCase } from "../UseCase";
-import { UploadMediaDTOInput, UploadMediaDTOOutput } from "../../dto/media/UploadMediaDTO";
-import { ListingRepository } from "../../../domain/repositories/Listing.repository";
-import { LocalUploader } from "../../../infra/utils/LocalUploader";
-import { UploadConfig } from "../../../infra/utils/UploadConfig";
+import { Media } from "../../../../domain/entities/Media";
+import { MediaRepository } from "../../../../domain/repositories/Media.repository";
+import { UseCase } from "../../UseCase";
+import { UploadMediaDTOInput, UploadMediaDTOOutput } from "../../../dto/listing/media/UploadMediaDTO";
+import { ListingRepository } from "../../../../domain/repositories/Listing.repository";
+import { LocalUploader } from "../../../../infra/utils/LocalUploader";
+import { UploadConfig } from "../../../../infra/utils/UploadConfig";
 
 export class UploadMediaUseCase implements UseCase<UploadMediaDTOInput, UploadMediaDTOOutput> {
     constructor(private readonly mediaRepo: MediaRepository, private readonly listingRepo: ListingRepository) {}
@@ -13,7 +13,6 @@ export class UploadMediaUseCase implements UseCase<UploadMediaDTOInput, UploadMe
 async execute(input: UploadMediaDTOInput): Promise<UploadMediaDTOOutput> {
     const { title, description, listingId, files } = input;
 
-    // ... (validações iniciais de listingId e files)
 
     const listing = await this.listingRepo.findById(listingId);
     if (!listing) throw new Error("Anúncio não encontrado.");

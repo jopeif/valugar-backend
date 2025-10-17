@@ -1,7 +1,7 @@
-import { ListingRepository } from "../../../domain/repositories/Listing.repository";
-import { MediaRepository } from "../../../domain/repositories/Media.repository";
-import { FindMediaByListingIddDTOInput, FindMediaByListingIddDTOOutput } from "../../dto/media/FindMediaByListingIdDTO";
-import { UseCase } from "../UseCase";
+import { ListingRepository } from "../../../../domain/repositories/Listing.repository";
+import { MediaRepository } from "../../../../domain/repositories/Media.repository";
+import { FindMediaByListingIddDTOInput, FindMediaByListingIddDTOOutput } from "../../../dto/listing/media/FindMediaByListingIdDTO";
+import { UseCase } from "../../UseCase";
 
 export class FindMediaByListingIdUseCase implements UseCase<FindMediaByListingIddDTOInput, FindMediaByListingIddDTOOutput> {
 
@@ -31,7 +31,7 @@ export class FindMediaByListingIdUseCase implements UseCase<FindMediaByListingId
                 return {
                     id: props.id,
                     title: props.title,
-                    description: props.description,
+                    description: props.description ? props.description : "",
                     type: props.type,
                     url: props.url,
                 };

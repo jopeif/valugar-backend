@@ -1,7 +1,7 @@
 export type MediaProps = {
     id: string,
     title: string,
-    description: string,
+    description: string | null,
     type:"IMAGE" | "VIDEO",
     url:string,
     listingId:string

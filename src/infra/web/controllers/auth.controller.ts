@@ -8,6 +8,8 @@ import { FindUserByEmailUseCase } from '../../../application/usecase/auth/findUs
 import { RegisterAdminUseCase } from '../../../application/usecase/auth/registerAdmin';
 import { RefreshTokenUseCase } from '../../../application/usecase/auth/refreshToken';
 import { VerificateEmailUseCase } from '../../../application/usecase/auth/verificateEmail';
+import { UploadProfilePictureUseCase } from '../../../application/usecase/auth/profilePicture/UploadProfilePicture';
+import multer from 'multer';
 
 export class AuthController {
     constructor(
@@ -19,7 +21,8 @@ export class AuthController {
         private readonly findUserByIdUseCase: FindUserByIdUseCase,
         private readonly findUserByEmailUseCase: FindUserByEmailUseCase,
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
-        private readonly verificateEmailUseCase: VerificateEmailUseCase
+        private readonly verificateEmailUseCase: VerificateEmailUseCase,
+        private readonly uploadProfilePictureUseCase: UploadProfilePictureUseCase,
     ) {}
 
     public async registerUser(req: Request, res: Response){
@@ -147,6 +150,30 @@ export class AuthController {
             res.status(200).json(result);
         }catch(error){
             console.error("Erro no auth.Controller, verificateEmail:", error);
+            res.status(401).json({ error });
+        }
+    }
+
+    public async uploadProfilePicture(req: Request, res: Response){
+        try {
+            const {userId} = req.params
+            const files = req.files as Express.Multer.File[]
+            
+            
+            if(!userId){
+                return res.status(400).json({error: "User ID is required"})
+            }
+
+            if(files.length!=1){
+                return res.status(400).json({error: "You must send exactly one profile picture is accepted."})
+            }
+
+            const file = files[0]!
+
+            const result = await this.uploadProfilePictureUseCase.execute({userId, file})
+
+            res.status(201).json(result)
+        } catch (error) {
             res.status(401).json({ error });
         }
     }

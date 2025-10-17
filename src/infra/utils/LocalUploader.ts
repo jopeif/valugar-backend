@@ -36,4 +36,20 @@ export class LocalUploader {
         
         return filename;
     }
+
+    static async delete(filePath: string): Promise<void> {
+        try {
+            const resolvedPath = path.resolve(filePath);
+            const fileExists = await fs.access(resolvedPath).then(() => true).catch(() => false);
+
+            if (!fileExists) {
+                throw new Error(`Arquivo não encontrado: ${resolvedPath}`);
+            }
+
+            await fs.unlink(resolvedPath);
+        } catch (error) {
+            throw new Error(`Erro ao deletar arquivo: ${(error as Error).message}`);
+        }
+    }
+
 }

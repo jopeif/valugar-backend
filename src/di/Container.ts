@@ -19,9 +19,10 @@ import { UserRepositoryPrisma } from "../infra/db/concrete.prisma/userRepository
 import { AuthController } from "../infra/web/controllers/auth.controller";
 import { listingController } from "../infra/web/controllers/listing.controller";
 import { NodemailerMailProvider } from "../infra/web/providers/email/nodemailerMailProvider";
-import { UploadMediaUseCase } from '../application/usecase/media.ts/UploadListingMedia';
+import { UploadMediaUseCase } from '../application/usecase/listing/media/UploadListingMedia';
 import { MediaRepositoryPrisma } from '../infra/db/concrete.prisma/mediaRepository.prisma';
-import { FindMediaByListingIdUseCase } from '../application/usecase/media.ts/findMediaByListing';
+import { FindMediaByListingIdUseCase } from '../application/usecase/listing/media/findMediaByListing';
+import { UploadProfilePictureUseCase } from '../application/usecase/auth/profilePicture/UploadProfilePicture';
 
 export class Container{
 
@@ -39,8 +40,9 @@ export class Container{
         const findUserByIdUC = new FindUserByIdUseCase(authRepo)
         const findUserByEmailUC = new FindUserByEmailUseCase(authRepo)
         const verificateEmailUC = new VerificateEmailUseCase(authRepo)
+        const uploadProfilePictureUC = new UploadProfilePictureUseCase(authRepo)
 
-        return new AuthController(registerUserUC, registerAdminUC, loginUC, findAllUsersUC, deleteUserUC, findUserByIdUC, findUserByEmailUC, refreshTokenUC, verificateEmailUC);
+        return new AuthController(registerUserUC, registerAdminUC, loginUC, findAllUsersUC, deleteUserUC, findUserByIdUC, findUserByEmailUC, refreshTokenUC, verificateEmailUC, uploadProfilePictureUC);
     }
 
     public get listingController(): listingController {

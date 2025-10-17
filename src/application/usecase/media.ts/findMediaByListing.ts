@@ -22,8 +22,11 @@ export class FindMediaByListingIdUseCase implements UseCase<FindMediaByListingId
 
             const mediaList = await this.mediaRepo.findByListingId(id);
 
-            if(mediaList){
-                const result: FindMediaByListingIddDTOOutput = mediaList.map((m) => {
+            if(!mediaList){
+                return null
+            }
+
+            const result: FindMediaByListingIddDTOOutput = mediaList.map((m) => {
                 const props = m.getProps();
                 return {
                     id: props.id,
@@ -35,9 +38,8 @@ export class FindMediaByListingIdUseCase implements UseCase<FindMediaByListingId
             });
 
             return result;
-            }else{
-                return null
-            }
+            
+            
             
 
             

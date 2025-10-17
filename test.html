@@ -100,7 +100,7 @@
 
   <div class="result" id="result"></div>
 
-  <figure><img src="http://localhost:3000/uploads/1760623804377_imagem_post_113.jpg"></img></figure>
+  <figure><img src="http://localhost:3000/infra/storage/uploads/b2ef7cf6-4a86-4069-8859-592c2098fad7.jpeg"></img></figure>
 
   <script>
     const form = document.getElementById('uploadForm');
@@ -145,7 +145,7 @@
       formData.append('description', description);
       formData.append('listingId', listingId);
       for (const file of files) {
-        formData.append('files', file);
+        formData.append('file', file);
       }
 
       try {

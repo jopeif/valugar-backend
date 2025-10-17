@@ -104,7 +104,7 @@ router.get("/find/:id", (req, res) => {container.listingController.findById(req,
  *             schema:
  *               $ref: '#/components/schemas/UpdateListingDTOOutput'
  */
-router.put("/update/:id", (req, res) => {
+router.patch("/update/:id", (req, res) => {
   container.listingController.update(req, res);
 });
 
@@ -119,7 +119,7 @@ router.get("/user/:id", (req, res) => {
   
 router.post(
   "/media/:listingId",
-  uploadMiddleware.array("files", 10),
+  uploadMiddleware,
   (req, res)=>{
     container.listingController.uploadMedia(req, res)
   }

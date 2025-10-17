@@ -4,6 +4,7 @@ import { setupSwagger } from './infra/config/swagger';
 import cors from 'cors';
 import AuthRouter from './infra/web/routes/AuthRoutes';
 import ListingRouter from './infra/web/routes/ListingRoutes';
+import path from 'path';
 
 dotenv.config();
 
@@ -13,12 +14,15 @@ const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: ["http://localhost:5500","http://localhost:5173", "http://localhost:3000", "https://valugar.vercel.app", "https://admin.valugar.vercel.app"], 
+  origin: ["*"], 
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
+const listingsStoragePath = path.resolve(__dirname, '..', 'src', 'infra', 'storage', 'listings');
+
+app.use('/media/', express.static(listingsStoragePath));
 app.use('/auth/', AuthRouter);
 app.use('/listing/', ListingRouter)
 

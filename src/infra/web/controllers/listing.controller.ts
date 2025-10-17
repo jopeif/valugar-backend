@@ -1,4 +1,4 @@
-import { UploadMediaUseCase } from './../../../application/usecase/media.ts/uploadMedia';
+import { UploadMediaUseCase } from '../../../application/usecase/media.ts/UploadListingMedia';
 import { CreateListingUseCase } from "../../../application/usecase/listing/createListing";
 import { Request, Response } from "express";
 import { DeleteListingUseCase } from "../../../application/usecase/listing/deleteListing";
@@ -7,7 +7,9 @@ import { UpdateListingUseCase } from "../../../application/usecase/listing/updat
 import { SearchListingsUseCase } from "../../../application/usecase/listing/searchListings";
 import { FindListingByUserUseCase } from "../../../application/usecase/listing/findListingByUser";
 import { FindMediaByListingIdUseCase } from '../../../application/usecase/media.ts/findMediaByListing';
+import multer from 'multer';
 
+    
 export class listingController{
 
     constructor(
@@ -20,6 +22,8 @@ export class listingController{
         public readonly uploadMediaUseCase: UploadMediaUseCase,
         public readonly findMediaByListingUseCase: FindMediaByListingIdUseCase,
     ){}
+
+    
 
     public async create(req:Request, res:Response){
         try {
@@ -109,20 +113,31 @@ export class listingController{
             res.status(400).json({ error })
         }
     }
-
+    
     async uploadMedia(req: Request, res: Response) {
         try {
-            const { listingId } = req.params;
-            if(!listingId){
-                throw new Error("ListingId é obrigatório.")
-            }
-            const {title, description} = req.body
-            const files = req.files as Express.Multer.File[];
+        const { listingId } = req.params;
+        const { title, description } = req.body;
+        const files = req.files as Express.Multer.File[];
 
-            const result = await this.uploadMediaUseCase.execute({title, description, listingId, files});
-            res.status(201).json(result);
-        } catch (error) {
-            res.status(400).json({ message: error });
+        if(!listingId){
+            throw new Error("É necessário enviar um id.")
+        }
+
+        if (!files || files.length === 0) {
+            throw new Error("Nenhum arquivo foi enviado.");
+        }
+
+        const result = await this.uploadMediaUseCase.execute({
+            listingId,
+            title,
+            description,
+            files,
+        });
+
+        res.status(201).json(result);
+        } catch (error: any) {
+        res.status(400).json({ message: error.message });
         }
     }
 

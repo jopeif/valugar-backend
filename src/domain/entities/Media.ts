@@ -11,6 +11,7 @@ export class Media{
 
     public static build(title: string, description: string,type:"IMAGE" | "VIDEO", url:string, listingId:string){
         const id = crypto.randomUUID()
+        url = `/media/${url}`
 
         return new Media({id, title, description, type, url, listingId})
     }

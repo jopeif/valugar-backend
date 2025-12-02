@@ -168,10 +168,15 @@ export class ListingRepositoryPrisma implements ListingRepository {
         hasBackyard?: boolean;
         hasPool?: boolean;
         hasSolarPanel?: boolean;
+        hasParkingLot?: boolean,
+        isAccessible?: boolean,
+        hasAirConditioner?: boolean,
+        hasChildArea?: boolean,
+        hasKitchen?: boolean,
+        hasWarehouse?: boolean,
     },
     ): Promise<{ listings: Listing[]; totalPages: number }> {
         try {
-            // Construção do filtro dinâmico
             const where: Prisma.ListingWhereInput = {
                 AND: [
                     query
@@ -218,7 +223,6 @@ export class ListingRepositoryPrisma implements ListingRepository {
                 ].filter(Boolean) as Prisma.ListingWhereInput[],
             };
 
-            // Contagem total e busca paginada
             const [totalCount, listingsRaw] = await Promise.all([
                 prisma.listing.count({ where }),
                 prisma.listing.findMany({
@@ -293,13 +297,71 @@ export class ListingRepositoryPrisma implements ListingRepository {
 
         
 
-        asyncfindByZipCode(zipCode: string): Promise<Listing | null> {
-            throw new Error("Method not implemented.");
+
+
+        async findAll(): Promise<Listing[]> {
+            try {
+                const listings = await prisma.listing.findMany({
+                    include: { address: true, propertyDetails: true },
+                    orderBy: { createdAt: "desc" }
+                });
+
+                return listings
+                    .filter(l => l.address && l.propertyDetails)
+                    .map(l => {
+                        const address = Address.assemble({
+                            id: l.address!.id,
+                            zipCode: l.address!.zipCode,
+                            state: l.address!.state,
+                            city: l.address!.city,
+                            neighborhood: l.address!.neighborhood,
+                            street: l.address!.street,
+                            reference: l.address!.reference
+                        });
+
+                        const d = l.propertyDetails!;
+                        const details = PropertyDetails.assemble({
+                            id: d.id,
+                            area: Number(d.area ?? 0),
+                            bedrooms: d.bedrooms ?? 0,
+                            bathrooms: d.bathrooms ?? 0,
+                            doesntPayWaterBill: d.doesntPayWaterBill,
+                            hasGarage: d.hasGarage,
+                            isPetFriendly: d.isPetFriendly,
+                            hasCeramicFlooring: d.hasCeramicFlooring,
+                            hasCeilingLining: d.hasCeilingLining,
+                            hasBackyard: d.hasBackyard,
+                            hasPool: d.hasPool,
+                            hasSolarPanel: d.hasSolarPanel,
+                            hasParkingLot: d.hasParkingLot,
+                            isAccessible: d.isAccessible,
+                            hasAirConditioner: d.hasAirConditioner,
+                            hasChildArea: d.hasChildArea,
+                            hasKitchen: d.hasKitchen,
+                            hasWarehouse: d.hasWarehouse
+                        });
+
+                        return Listing.assemble({
+                            id: l.id,
+                            title: l.title,
+                            type: l.type,
+                            category: l.category as "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
+                            basePrice: Number(l.basePrice),
+                            userId: l.userId,
+                            description: l.description,
+                            iptu: l.iptu ? Number(l.iptu) : null,
+                            address,
+                            propertyDetails: details,
+                            createdAt: l.createdAt!,
+                            updatedAt: l.updatedAt
+                        });
+                    });
+            } catch (error) {
+                console.error("Erro ao listar listings no findAll:", error);
+                throw error;
+            }
         }
 
-        findAll(): Promise<Listing[]> {
-            throw new Error("Method not implemented.");
-        }
 
         async update(listing: Listing): Promise<boolean> {
             try {
@@ -375,16 +437,15 @@ export class ListingRepositoryPrisma implements ListingRepository {
                 const addressProps = address.getProps();
                 const detailsProps = details.getProps();
 
-                
+                const result = await prisma.$transaction(async (tx) => {
 
-                await prisma.$transaction(async (tx) => {
-                    
-                    const detailsRecord = await tx.propertyDetail.create({
+                    await tx.propertyDetail.create({
                         data: {
                             id: detailsProps.id,
                             area: detailsProps.area,
                             bedrooms: detailsProps.bedrooms,
                             bathrooms: detailsProps.bathrooms,
+
                             doesntPayWaterBill: detailsProps.doesntPayWaterBill,
                             hasGarage: detailsProps.hasGarage,
                             isPetFriendly: detailsProps.isPetFriendly,
@@ -394,11 +455,17 @@ export class ListingRepositoryPrisma implements ListingRepository {
                             hasPool: detailsProps.hasPool,
                             hasSolarPanel: detailsProps.hasSolarPanel,
 
-                            
+                            hasParkingLot: detailsProps.hasParkingLot,
+                            isAccessible: detailsProps.isAccessible,
+                            hasAirConditioner: detailsProps.hasAirConditioner,
+                            hasChildArea: detailsProps.hasChildArea,
+                            hasKitchen: detailsProps.hasKitchen,
+                            hasWarehouse: detailsProps.hasWarehouse,
                         }
                     });
-                    
-                    const addressRecord = await tx.address.create({
+
+
+                    await tx.address.create({
                         data: {
                             id: addressProps.id,
                             zipCode: addressProps.zipCode,
@@ -408,7 +475,7 @@ export class ListingRepositoryPrisma implements ListingRepository {
                             street: addressProps.street,
                             reference: addressProps.reference
                         }
-                    })
+                    });
 
                     const listingRecord = await tx.listing.create({
                         data: {
@@ -416,9 +483,11 @@ export class ListingRepositoryPrisma implements ListingRepository {
                             title: listingProps.title,
                             description: listingProps.description,
                             type: listingProps.type,
-                            category: listingProps.category as 'RESIDENTIAL' | 'COMMERCIAL' | 'MIXED_USE',
-                            basePrice: listingProps.basePrice as number,
-                            iptu: listingProps.iptu as number,
+                            category: listingProps.category,
+                            basePrice: listingProps.basePrice,
+                            iptu: listingProps.iptu,
+                            createdAt: listingProps.createdAt,
+                            updatedAt: listingProps.updatedAt,
                             user: {
                                 connect: { id: listingProps.userId }
                             },
@@ -430,13 +499,16 @@ export class ListingRepositoryPrisma implements ListingRepository {
                             }
                         }
                     });
-                }
-            )
-            
-            return listingProps.id;
-        } catch (error) {
-            console.error("Erro ao salvar listing no ListingRepositoryPrisma:", error);
-            throw error;
+
+                    return listingRecord.id;
+                });
+
+                return result; // retorno correto
+
+            } catch (error) {
+                console.error("Erro ao salvar listing:", error);
+                throw error; // deixa o controller retornar 500
+            }
         }
-    }       
+
 }

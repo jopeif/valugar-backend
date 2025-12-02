@@ -23,6 +23,12 @@ export interface ListingRepository {
             hasBackyard?: boolean;
             hasPool?: boolean;
             hasSolarPanel?: boolean;
+            hasParkingLot?: boolean,
+            isAccessible?: boolean,
+            hasAirConditioner?: boolean,
+            hasChildArea?: boolean,
+            hasKitchen?: boolean,
+            hasWarehouse?: boolean,
         },
         
     ): Promise<{ listings: Listing[]; totalPages: number }> 

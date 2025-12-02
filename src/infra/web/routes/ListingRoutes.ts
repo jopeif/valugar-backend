@@ -118,6 +118,10 @@ router.get("/search/", (req, res) => {
 router.get("/user/:id", (req, res) => {
   container.listingController.findListingByUser(req, res)
 })
+
+router.get("/all/", (req, res) => {
+  container.listingController.findAll(req, res)
+});
   
 router.post(
   "/media/:listingId",

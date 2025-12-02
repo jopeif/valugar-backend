@@ -63,7 +63,6 @@ export type SearchListingsDTOOutput = {
                 hasChildArea?: boolean,
                 hasKitchen?: boolean,
                 hasWarehouse?: boolean,
-                        
             }
         }[],
         totalPages:number

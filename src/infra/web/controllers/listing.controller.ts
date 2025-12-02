@@ -8,6 +8,7 @@ import { UpdateListingUseCase } from "../../../application/usecase/listing/updat
 import { SearchListingsUseCase } from "../../../application/usecase/listing/searchListings";
 import { FindListingByUserUseCase } from "../../../application/usecase/listing/findListingByUser";
 import multer from 'multer';
+import { FindAllListing } from '../../../application/usecase/listing/findAllListings';
 
     
 export class listingController{
@@ -19,6 +20,7 @@ export class listingController{
         public readonly updateListingUseCase: UpdateListingUseCase,
         public readonly searchListingsUseCase: SearchListingsUseCase,
         public readonly findListingByUserUseCase: FindListingByUserUseCase,
+        public readonly findAllListingsUseCase: FindAllListing,
         public readonly uploadMediaUseCase: UploadMediaUseCase,
         public readonly findMediaByListingUseCase: FindMediaByListingIdUseCase,
     ){}
@@ -70,18 +72,37 @@ export class listingController{
         }
     }
 
-    public async findById(req:Request, res:Response){
+    public async findAll(req: Request, res: Response) {
         try {
-            const { id } = req.params;
-            if(!id){
-                return res.status(400).json({ error: "ID is required" });
-            }
-            const findByIdUseCase = await this.findByIdUseCase.execute({id});
-            res.status(200).json(await findByIdUseCase);
-        } catch (error) {
-            res.status(400).json({ error });
+            const result = await this.findAllListingsUseCase.execute();
+            return res.status(200).json(result);
+
+        } catch (error: any) {
+            return res.status(400).json({ error: error.message ?? "Unexpected error" });
         }
     }
+
+    public async findById(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+
+            if (!id) {
+                return res.status(400).json({ error: "ID is required" });
+            }
+
+            const result = await this.findByIdUseCase.execute({ id });
+            return res.status(200).json(result);
+
+        } catch (error: any) {
+
+            if (error.message === "Listing not found") {
+                return res.status(404).json({ error: "Listing not found" });
+            }
+
+            return res.status(400).json({ error: error.message ?? "Unexpected error" });
+        }
+    }
+
 
     public async searchListings(req: Request, res: Response){
         try {
@@ -92,7 +113,7 @@ export class listingController{
                 throw new Error("Um termo de pesquisa deve ser enviado.")
             }
 
-            const result = await this.searchListingsUseCase.execute({query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, listingType, details, page, pageSize})
+            const result = await this.searchListingsUseCase.execute({query, minPrice, maxPrice, minBedrooms, maxBedrooms, propertyCategory, type: listingType, details, page, pageSize})
             res.status(200).json(result);
         } catch (error) {
             res.status(400).json({ error })

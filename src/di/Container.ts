@@ -23,6 +23,8 @@ import { UploadMediaUseCase } from '../application/usecase/listing/media/UploadL
 import { MediaRepositoryPrisma } from '../infra/db/concrete.prisma/mediaRepository.prisma';
 import { FindMediaByListingIdUseCase } from '../application/usecase/listing/media/findMediaByListing';
 import { UploadProfilePictureUseCase } from '../application/usecase/auth/profilePicture/UploadProfilePicture';
+import { LoginWithGoogleUseCase } from '../application/usecase/auth/loginWithGoogle';
+import { FindAllListing } from '../application/usecase/listing/findAllListings';
 
 export class Container{
 
@@ -34,6 +36,7 @@ export class Container{
         const registerUserUC = new RegisterUserUseCase(authRepo, mailProvider)
         const registerAdminUC = new RegisterAdminUseCase(authRepo, mailProvider)
         const loginUC = new LoginUseCase(authRepo, refreshTokenRepo, mailProvider)
+        const loginWithGoogleUC = new LoginWithGoogleUseCase(authRepo, refreshTokenRepo, mailProvider)
         const refreshTokenUC = new RefreshTokenUseCase(refreshTokenRepo, authRepo)
         const findAllUsersUC = new FindAllUsersUseCase(authRepo)
         const deleteUserUC = new DeleteUserUseCase(authRepo)
@@ -42,7 +45,7 @@ export class Container{
         const verificateEmailUC = new VerificateEmailUseCase(authRepo)
         const uploadProfilePictureUC = new UploadProfilePictureUseCase(authRepo)
 
-        return new AuthController(registerUserUC, registerAdminUC, loginUC, findAllUsersUC, deleteUserUC, findUserByIdUC, findUserByEmailUC, refreshTokenUC, verificateEmailUC, uploadProfilePictureUC);
+        return new AuthController(registerUserUC, registerAdminUC, loginUC, loginWithGoogleUC, findAllUsersUC, deleteUserUC, findUserByIdUC, findUserByEmailUC, refreshTokenUC, verificateEmailUC, uploadProfilePictureUC);
     }
 
     public get listingController(): listingController {
@@ -50,7 +53,7 @@ export class Container{
         const authRepo = new UserRepositoryPrisma()
         const mediaRepo = new MediaRepositoryPrisma()
 
-        const createListingUseCase = new CreateListingUseCase(listingRepo)
+        const createListingUseCase = new CreateListingUseCase(listingRepo, authRepo)
         const deleteListingUseCase = new DeleteListingUseCase(listingRepo)
         const findByIdUseCase = new FindListingByIdUseCase(listingRepo)
         const updateListingUC = new UpdateListingUseCase(listingRepo)
@@ -58,7 +61,8 @@ export class Container{
         const findListingByUserUC = new FindListingByUserUseCase(listingRepo, authRepo)
         const uploadMediaUC = new UploadMediaUseCase(mediaRepo, listingRepo)
         const findMediaByListingUC = new FindMediaByListingIdUseCase(mediaRepo, listingRepo)
+        const findAllListingUC = new FindAllListing(listingRepo)
 
-        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase, updateListingUC, searchListingsUC, findListingByUserUC, uploadMediaUC, findMediaByListingUC);
+        return new listingController(createListingUseCase, deleteListingUseCase, findByIdUseCase, updateListingUC, searchListingsUC, findListingByUserUC, findAllListingUC, uploadMediaUC, findMediaByListingUC);
     }
 }

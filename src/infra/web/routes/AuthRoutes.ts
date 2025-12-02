@@ -35,6 +35,8 @@ const container = ContainerFactory.getContainer();
  */
 router.post("/login", (req, res) => container.authController.login(req, res));
 
+router.post("/login/google", (req, res) => container.authController.loginWithGoogle(req, res))
+
 
 
 /**

@@ -9,13 +9,14 @@ import { RegisterAdminUseCase } from '../../../application/usecase/auth/register
 import { RefreshTokenUseCase } from '../../../application/usecase/auth/refreshToken';
 import { VerificateEmailUseCase } from '../../../application/usecase/auth/verificateEmail';
 import { UploadProfilePictureUseCase } from '../../../application/usecase/auth/profilePicture/UploadProfilePicture';
-import multer from 'multer';
+import { LoginWithGoogleUseCase } from '../../../application/usecase/auth/loginWithGoogle';
 
 export class AuthController {
     constructor(
         private readonly registerUserUseCase: RegisterUserUseCase, 
         private readonly registerAdminUseCase: RegisterAdminUseCase,
         private readonly loginUseCase: LoginUseCase, 
+        private readonly loginWithGoogleUseCase: LoginWithGoogleUseCase,
         private readonly findAllUsersUseCase: FindAllUsersUseCase, 
         private readonly deleteUserUseCase: DeleteUserUseCase,
         private readonly findUserByIdUseCase: FindUserByIdUseCase,
@@ -23,6 +24,7 @@ export class AuthController {
         private readonly refreshTokenUseCase: RefreshTokenUseCase,
         private readonly verificateEmailUseCase: VerificateEmailUseCase,
         private readonly uploadProfilePictureUseCase: UploadProfilePictureUseCase,
+    
     ) {}
 
     public async registerUser(req: Request, res: Response){
@@ -34,7 +36,7 @@ export class AuthController {
                 password,
                 phone
             })
-            res.status(200).json(result);
+            res.status(201).json(result);
         }catch(error){
             console.error("Erro no auth.Controller, registerUser:", error);
             res.status(401).json({ error });
@@ -69,6 +71,16 @@ export class AuthController {
         }catch(error){
             console.error("Erro no auth.Controller, login:", error);
             res.status(401).json({ error });
+        }
+    }
+
+    public async loginWithGoogle(req: Request, res: Response){
+        try {
+            const {token} = req.body
+            const result = await this.loginWithGoogleUseCase.execute(token)
+            res.status(200).json(result)
+        } catch (error) {
+            res.status(401).json({error})
         }
     }
 

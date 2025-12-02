@@ -2,17 +2,26 @@ import { Address } from "../../../domain/entities/Address";
 import { Listing } from "../../../domain/entities/Listing";
 import { PropertyDetails } from "../../../domain/entities/PropertyDetail";
 import { ListingRepository } from "../../../domain/repositories/Listing.repository";
+import { UserRepository } from "../../../domain/repositories/User.repository";
 import { createListingDTOInput, createListingDTOOutput } from "../../dto/listing/CreateListingDTO";
 import { UseCase } from "../UseCase";
 
 export class CreateListingUseCase implements UseCase<createListingDTOInput, createListingDTOOutput> {
 
-    constructor(private readonly repository:ListingRepository){}
+    constructor(
+        private readonly repository:ListingRepository,
+        private readonly userRepository: UserRepository
+    ){}
 
     async execute(input: createListingDTOInput): Promise<createListingDTOOutput> {
         try {
             const { title, description, type, category, basePrice, iptu, userId, address, details } = input;
 
+            const user =  await this.userRepository.findById(userId);
+            if(!user){
+                throw new Error("Usuário não encontrado");
+            }
+            
             if(category=="COMMERCIAL" && ["CASA", "APARTAMENTO", "KITNET", "QUARTO", "SITIO"].includes(type)
             || category=="RESIDENTIAL" && ["LOJA", "BOX", "ARMAZEM", "SALA", "PREDIO"].includes(type)
             ){ 
@@ -32,6 +41,7 @@ export class CreateListingUseCase implements UseCase<createListingDTOInput, crea
                 details.hasBackyard,
                 details.hasPool,
                 details.hasSolarPanel,
+
                 details.hasParkingLot,
                 details.isAccessible,
                 details.hasAirConditioner,
@@ -39,6 +49,9 @@ export class CreateListingUseCase implements UseCase<createListingDTOInput, crea
                 details.hasKitchen,
                 details.hasWarehouse,
             );
+
+            console.log("Details instance created:", detailsInstance);
+
 
             const addressInstance = Address.build(
                 address.zipCode,

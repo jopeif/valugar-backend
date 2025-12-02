@@ -8,8 +8,8 @@ export type ListingProps = {
     description: string | null,
     type: "CASA" | "APARTAMENTO" | "KITNET" | "QUARTO" | "SITIO" |  "LOJA" | "BOX" | "ARMAZEM" | "SALA" | "PREDIO" | "OUTRO"
     category: "RESIDENTIAL" | "COMMERCIAL" | "MIXED_USE",
-    basePrice: Number,
-    iptu: Number | null,
+    basePrice: number,
+    iptu: number | null,
     userId: string,
     createdAt: Date,
     updatedAt: Date | null,
